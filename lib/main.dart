@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return Provider<GameServer>(
       create: (_) => GameServer(),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Video Game Viewer',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
