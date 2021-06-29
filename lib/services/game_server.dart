@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:video_game_wish_list/models/sale_model.dart';
+import 'package:video_game_wish_list/models/deal_model.dart';
 
 class GameServer {
   GameServer() {
@@ -8,10 +8,10 @@ class GameServer {
   }
 
   Dio _dio = Dio();
-  StreamController<List<SaleModel>> _gamesStreamController =
-      StreamController<List<SaleModel>>();
+  StreamController<List<DealModel>> _gamesStreamController =
+      StreamController<List<DealModel>>();
 
-  Stream<List<SaleModel>> get games => _gamesStreamController.stream;
+  Stream<List<DealModel>> get games => _gamesStreamController.stream;
 
   void dispose() => _gamesStreamController.close();
 
@@ -20,7 +20,7 @@ class GameServer {
     if (response.statusCode == 200) {
       List<dynamic> items = response.data;
       _gamesStreamController
-          .add(items.map((e) => SaleModel.fromJson(e)).toList());
+          .add(items.map((e) => DealModel.fromJson(e)).toList());
     }
   }
 }
