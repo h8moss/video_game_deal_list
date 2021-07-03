@@ -14,15 +14,16 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Discover deals')),
       body: StreamBuilder<List<DealModel>>(
-          initialData: [],
-          stream: gameServer.games,
-          builder: (context, snapshot) {
-            return ListView.separated(
-                separatorBuilder: (_, __) => Divider(),
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) =>
-                    _buildGridItem(context, snapshot.data![index]));
-          }),
+        initialData: [],
+        stream: gameServer.games,
+        builder: (context, snapshot) {
+          return ListView.separated(
+              separatorBuilder: (_, __) => Divider(),
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) =>
+                  _buildGridItem(context, snapshot.data![index]));
+        },
+      ),
     );
   }
 

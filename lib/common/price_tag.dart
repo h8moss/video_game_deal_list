@@ -17,7 +17,7 @@ class PriceTag extends StatelessWidget {
     return Container(
       child: Padding(
         padding: const EdgeInsets.all(4.0),
-        child: Text(isZero ? 'Free' : '$price\$',
+        child: Text(isZero ? 'Free' : '${price.toStringAsFixed(2)}\$',
             style: TextStyle(
                 decoration: textDecoration, color: textColor, fontSize: 13)),
       ),
