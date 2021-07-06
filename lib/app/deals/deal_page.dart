@@ -4,12 +4,6 @@ import 'package:video_game_wish_list/common/store_display_builder.dart';
 import 'package:video_game_wish_list/models/deal_model.dart';
 
 class DealPage extends StatelessWidget {
-  static show(BuildContext context, DealModel model) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => DealPage(model: model),
-    ));
-  }
-
   const DealPage({Key? key, required this.model}) : super(key: key);
 
   final DealModel model;
@@ -34,17 +28,8 @@ class DealPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  PriceTag(
-                    model.originalPrice,
-                    textDecoration: TextDecoration.lineThrough,
-                    textColor: Colors.red,
-                    backgroundColor: Colors.red[100],
-                  ),
-                  PriceTag(
-                    model.price,
-                    textColor: Colors.green,
-                    backgroundColor: Colors.green[100],
-                  ),
+                  PriceTag.red(model.originalPrice),
+                  PriceTag.green(model.price),
                 ],
               ),
               Center(

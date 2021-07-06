@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 
-import 'pages/home_page.dart';
+import 'app/home_page/home_page.dart';
+import 'app/home_page/home_page_builder.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,9 +17,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Video Game Deal Viewer',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.orange,
         ),
-        home: HomePage(),
+        home: HomePageBuilder(),
       ),
     );
   }

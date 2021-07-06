@@ -8,20 +8,34 @@ class DealModel {
     required this.thumbnailUrl,
     required this.storeId,
     required this.percentageOff,
+    required this.id,
   });
   factory DealModel.fromJson(dynamic json) {
-    print(json['normalPrice']);
-    print(json['salePrice']);
     return DealModel(
-      gameName: json['title']!,
-      originalPrice: double.parse(json['normalPrice']!),
-      price: double.parse(json['salePrice']!),
-      thumbnailUrl: json['thumb']!,
-      storeId: int.parse(json['storeID']!),
-      percentageOff: double.parse(json['savings']!),
+        gameName: json['title']!,
+        originalPrice: double.parse(json['normalPrice']!),
+        price: double.parse(json['salePrice']!),
+        thumbnailUrl: json['thumb']!,
+        storeId: int.parse(json['storeID']!),
+        percentageOff: double.parse(json['savings']!),
+        id: json['dealID']);
+  }
+
+  factory DealModel.fromGameInfoJson(dynamic json, String dealId) {
+    double retail = double.parse(json['gameInfo']['retailPrice']);
+    double sale = double.parse(json['gameInfo']['salePrice']);
+    return DealModel(
+      gameName: json['gameInfo']['name'],
+      id: dealId,
+      originalPrice: retail,
+      percentageOff: 100 - (100 * sale / retail),
+      price: sale,
+      storeId: int.parse(json['gameInfo']['storeID']),
+      thumbnailUrl: json['gameInfo']['thumb'],
     );
   }
 
+  String id;
   String gameName;
   String thumbnailUrl;
   double price;

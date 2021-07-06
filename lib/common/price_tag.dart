@@ -5,6 +5,21 @@ class PriceTag extends StatelessWidget {
       {Key? key, this.textColor, this.textDecoration, this.backgroundColor})
       : super(key: key);
 
+  PriceTag.green(double price)
+      : this(
+          price,
+          backgroundColor: Colors.green[100],
+          textColor: Colors.green,
+        );
+
+  PriceTag.red(double price)
+      : this(
+          price,
+          backgroundColor: Colors.red[100],
+          textColor: Colors.red,
+          textDecoration: TextDecoration.lineThrough,
+        );
+
   final double price;
   final TextDecoration? textDecoration;
   final Color? backgroundColor;

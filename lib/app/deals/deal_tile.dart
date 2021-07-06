@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_game_wish_list/common/price_tag.dart';
-
-import 'models/deal_model.dart';
+import 'package:video_game_wish_list/models/deal_model.dart';
 
 class DealTile extends StatelessWidget {
   DealTile({required this.saleModel, required this.onPressed});
@@ -34,20 +33,9 @@ class DealTile extends StatelessWidget {
                       style: TextStyle(color: Colors.black87)),
                   Row(
                     children: [
-                      PriceTag(
-                        saleModel.originalPrice,
-                        textColor: Colors.red,
-                        textDecoration: TextDecoration.lineThrough,
-                        backgroundColor: Colors.red[100],
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      PriceTag(
-                        saleModel.price,
-                        textColor: Colors.green,
-                        backgroundColor: Colors.green[100],
-                      ),
+                      PriceTag.red(saleModel.originalPrice),
+                      SizedBox(width: 8),
+                      PriceTag.green(saleModel.price),
                     ],
                   )
                 ],
