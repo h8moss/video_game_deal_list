@@ -30,7 +30,7 @@ class HomePageBloc extends Bloc<HomePageEvent, List<DealModel>> {
       if (hasMorePages) {
         currentPage++;
         final items = await server.fetchGames(currentPage);
-        // totalResults = items.totalResults;
+        totalPages = items.totalPages;
         add(AppendDealsEvent(items.results));
       }
     }
