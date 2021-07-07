@@ -16,12 +16,13 @@ class GameServer {
         .get('https://www.cheapshark.com/api/1.0/deals?pageNumber=$page');
     if (response.statusCode == 200) {
       List<dynamic> items = response.data;
-      print(response.headers.map['X-Total-Page-Count']);
+      print(response.headers.value('X-Total-Page-Count'));
       return DealResults(
         currentResults: 60,
         page: page,
         results: items.map((e) => DealModel.fromJson(e)).toList(),
-        totalResults: 1,
+        totalPages:
+            int.parse(response.headers.value('X-Total-Page-Count') ?? '0'),
       );
     }
     throw HttpException(
@@ -63,10 +64,10 @@ class DealResults {
     required this.currentResults,
     required this.page,
     required this.results,
-    required this.totalResults,
+    required this.totalPages,
   });
   final int page;
-  final int totalResults;
+  final int totalPages;
   final int currentResults;
   final List<DealModel> results;
 }

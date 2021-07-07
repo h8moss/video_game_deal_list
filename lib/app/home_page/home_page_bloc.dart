@@ -12,9 +12,9 @@ class HomePageBloc extends Bloc<HomePageEvent, List<DealModel>> {
 
   final GameServer server;
   int currentPage = 0;
-  int totalResults = 180;
+  int totalPages = 1;
 
-  bool get hasMorePages => totalResults - state.length > 0;
+  bool get hasMorePages => currentPage < totalPages - 1;
 
   @override
   Stream<List<DealModel>> mapEventToState(HomePageEvent event) async* {
