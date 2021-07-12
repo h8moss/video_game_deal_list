@@ -23,7 +23,7 @@ class HomePageBloc extends Bloc<HomePageEvent, List<DealModel>> {
   }
 
   void onRender(int i) async {
-    int threshold = currentPage * 60 - 5;
+    int threshold = (currentPage + 1) * 60 - 5;
     print('rendering $i');
     if (i >= threshold) {
       print('Past threshold!');
@@ -39,6 +39,7 @@ class HomePageBloc extends Bloc<HomePageEvent, List<DealModel>> {
   Future<void> getPage0() async {
     final page0 = await server.fetchGames(0);
     currentPage = 0;
+    totalPages = page0.totalPages;
     add(SetDealsEvent(page0.results));
   }
 }
