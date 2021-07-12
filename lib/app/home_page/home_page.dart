@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/deals/deal_page_builder.dart';
 import 'package:video_game_wish_list/app/deals/deal_tile.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_bloc.dart';
+import 'package:video_game_wish_list/common/filter_bottom_sheet.dart';
 import 'package:video_game_wish_list/models/deal_model.dart';
+import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 
 class HomePage extends StatelessWidget {
@@ -22,7 +24,20 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<HomePageBloc>(context);
     return Scaffold(
-      appBar: AppBar(title: Text('Discover deals')),
+      appBar: AppBar(
+        title: Text('Discover deals'),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              await FilterBottomSheet.show(context, FilterModel());
+            },
+            child: Icon(
+              Icons.filter_list,
+              color: Colors.black,
+            ),
+          )
+        ],
+      ),
       body: BlocBuilder<HomePageBloc, List<DealModel>>(
         builder: (context, data) {
           return ListView.separated(
