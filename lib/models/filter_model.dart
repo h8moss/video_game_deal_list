@@ -1,11 +1,11 @@
 class FilterModel {
-  FilterModel({
+  const FilterModel({
     this.higherPrice,
     this.lowerPrice,
     this.stores: const [],
   });
 
-  int? higherPrice;
-  int? lowerPrice;
-  List<int> stores;
+  final int? higherPrice;
+  final int? lowerPrice;
+  final List<int> stores;
 }
