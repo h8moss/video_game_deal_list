@@ -8,12 +8,15 @@ class GameServer {
   GameServer();
 
   Dio _dio = Dio();
+  static String domain = 'https://www.cheapshark.com/api/1.0';
+
+  static String get dealsUrl => '$domain/deals';
+  static String get storesUrl => '$domain/stores';
 
   /// asynchronously fetch the games from the cheap shark api from the specified
   /// [page]
   Future<DealResults> fetchGames(int page) async {
-    final response = await _dio
-        .get('https://www.cheapshark.com/api/1.0/deals?pageNumber=$page');
+    final response = await _dio.get('$dealsUrl?pageNumber=$page');
     if (response.statusCode == 200) {
       List<dynamic> items = response.data;
       print(response.headers.value('X-Total-Page-Count'));
@@ -29,10 +32,17 @@ class GameServer {
         'Could not connect to the cheap shark API: status code: ${response.statusCode}');
   }
 
+  Future<List<StoreModel>?> getAllStores() async {
+    final response = await _dio.get(storesUrl);
+    if (response.statusCode == 200) {
+      List<dynamic> items = response.data;
+      return items.map((e) => StoreModel.fromJson(e)).toList();
+    }
+  }
+
   Stream<StoreModel?> getStore(int storeID) async* {
     yield null;
-    final response =
-        await _dio.get('https://www.cheapshark.com/api/1.0/stores');
+    final response = await _dio.get(storesUrl);
     if (response.statusCode == 200) {
       List<dynamic> items = response.data;
       if (storeID <= items.length)
@@ -45,8 +55,7 @@ class GameServer {
 
   Stream<DealModel?> getDeal(String dealID) async* {
     yield null;
-    final response =
-        await _dio.get('https://www.cheapshark.com/api/1.0/deals?id=$dealID');
+    final response = await _dio.get('$dealsUrl?id=$dealID');
     if (response.statusCode == 200) {
       try {
         var obj = response.data as Map<String, dynamic>;
