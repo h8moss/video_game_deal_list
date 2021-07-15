@@ -1,10 +1,15 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:video_game_wish_list/app/filtering/filter_bottom_sheet.dart';
 import 'package:video_game_wish_list/models/deal_model.dart';
+import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 
-class HomePageBloc extends Bloc<HomePageEvent, List<DealModel>> {
+import 'home_page_event.dart';
+
+class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   HomePageBloc(
-    List<DealModel> initialState, {
+    HomePageState initialState, {
     required this.server,
   }) : super(initialState) {
     getPage0();
@@ -17,9 +22,13 @@ class HomePageBloc extends Bloc<HomePageEvent, List<DealModel>> {
   bool get hasMorePages => currentPage < totalPages - 1;
 
   @override
-  Stream<List<DealModel>> mapEventToState(HomePageEvent event) async* {
-    if (event is AppendDealsEvent) yield [...state, ...event.deals];
-    if (event is SetDealsEvent) yield event.deals;
+  Stream<HomePageState> mapEventToState(HomePageEvent event) async* {
+    if (event is AppendDealsEvent)
+      yield state.updateWith(deals: [...state.deals, ...event.deals]);
+    if (event is SetDealsEvent)
+      yield state.updateWith(deals: event.deals);
+    else
+      throw UnimplementedError();
   }
 
   void onRender(int i) async {
@@ -42,20 +51,30 @@ class HomePageBloc extends Bloc<HomePageEvent, List<DealModel>> {
     totalPages = page0.totalPages;
     add(SetDealsEvent(page0.results));
   }
+
+  Future<void> onFiltering(BuildContext context) async {
+    final filter = await FilterBottomSheet.show(context, state.filter);
+  }
 }
 
-class HomePageEvent {
-  HomePageEvent();
-}
-
-class AppendDealsEvent extends HomePageEvent {
-  AppendDealsEvent(this.deals) : super();
+class HomePageState {
+  HomePageState({
+    this.deals: const [],
+    this.filter: const FilterModel(),
+  });
 
   final List<DealModel> deals;
-}
+  final FilterModel filter;
 
-class SetDealsEvent extends HomePageEvent {
-  SetDealsEvent(this.deals) : super();
+  HomePageState updateWith({
+    List<DealModel>? deals,
+    FilterModel? filter,
+  }) {
+    return HomePageState(
+      deals: deals ?? this.deals,
+      filter: filter ?? this.filter,
+    );
+  }
 
-  final List<DealModel> deals;
+  int get dealCount => deals.length;
 }
