@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_bloc.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_event.dart';
-import 'package:video_game_wish_list/app/filtering/filter_sheet_model.dart';
+import 'package:video_game_wish_list/app/filtering/filter_sheet_state.dart';
 import 'package:video_game_wish_list/common/store_display.dart';
 import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 import '../../common/labeled_slider.dart';
+
+typedef SectionBuilder = Widget Function(BuildContext, FilterSheetState);
 
 class FilterBottomSheet extends StatelessWidget {
   const FilterBottomSheet({Key? key, required this.filterModel})
@@ -23,7 +25,7 @@ class FilterBottomSheet extends StatelessWidget {
       context: context,
       builder: (_) => BlocProvider<FilterSheetBloc>(
         child: FilterBottomSheet(filterModel: model),
-        create: (_) => FilterSheetBloc(FilterSheetModel(), server),
+        create: (_) => FilterSheetBloc(FilterSheetState(), server),
       ),
     ) as FilterModel?;
     return resultModel ?? model;
@@ -32,7 +34,7 @@ class FilterBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
-    return BlocBuilder<FilterSheetBloc, FilterSheetModel>(
+    return BlocBuilder<FilterSheetBloc, FilterSheetState>(
       builder: (context, state) => ListView(
         children: [
           TextButton(
@@ -46,34 +48,18 @@ class FilterBottomSheet extends StatelessWidget {
             ),
           ),
           ExpansionPanelList(
-            animationDuration: Duration(milliseconds: 500),
+            animationDuration: Duration(seconds: 1),
             expansionCallback: (index, isExpanded) => bloc
                 .add(ToggleExpandedPanel(FilterSheetSections.values[index])),
             children: [
-              ExpansionPanel(
-                headerBuilder: (_, b) => Text('Price range'),
-                body: _buildPriceRangeBody(context, state),
-                isExpanded:
-                    state.getSectionExpansion(FilterSheetSections.PriceRange),
-              ),
-              ExpansionPanel(
-                headerBuilder: (_, b) => Text('Stores'),
-                body: _buildStoresBody(context, state),
-                isExpanded:
-                    state.getSectionExpansion(FilterSheetSections.Stores),
-              ),
-              ExpansionPanel(
-                headerBuilder: (_, __) => Text('Sorting'),
-                body: _buildSortBody(context, state),
-                isExpanded:
-                    state.getSectionExpansion(FilterSheetSections.Sorting),
-              ),
-              ExpansionPanel(
-                headerBuilder: (_, __) => Text('Rating'),
-                body: _buildRatingBody(context, state),
-                isExpanded:
-                    state.getSectionExpansion(FilterSheetSections.Rating),
-              )
+              for (var item in FilterSheetSections.values)
+                ExpansionPanel(
+                  headerBuilder: (_, b) => Text(
+                      bloc.filterSheetSectionsNames(item),
+                      style: TextStyle(fontSize: 19)),
+                  body: _getSectionBuilder(item)(context, state),
+                  isExpanded: state.getSectionExpansion(item),
+                ),
             ],
           )
         ],
@@ -81,7 +67,20 @@ class FilterBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceRangeBody(BuildContext context, FilterSheetModel model) {
+  SectionBuilder _getSectionBuilder(FilterSheetSections section) {
+    switch (section) {
+      case FilterSheetSections.PriceRange:
+        return _buildPriceRangeBody;
+      case FilterSheetSections.Stores:
+        return _buildStoresBody;
+      case FilterSheetSections.Sorting:
+        return _buildSortBody;
+      case FilterSheetSections.Rating:
+        return _buildRatingBody;
+    }
+  }
+
+  Widget _buildPriceRangeBody(BuildContext context, FilterSheetState state) {
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
     return Column(
       children: [
@@ -89,7 +88,7 @@ class FilterBottomSheet extends StatelessWidget {
         Row(
           children: [
             Checkbox(
-                value: model.lowerPriceRangeIsAny,
+                value: state.lowerPriceRangeIsAny,
                 onChanged: (value) {
                   bloc.add(ToggleLowerPriceRange());
                 }),
@@ -97,25 +96,25 @@ class FilterBottomSheet extends StatelessWidget {
           ],
         ),
         _buildLabeledSlider(
-          model.lowerPriceRange,
+          state.lowerPriceRange,
           (val) => bloc.add(SetLowerPriceRange(val.round())),
-          !model.lowerPriceRangeIsAny,
+          !state.lowerPriceRangeIsAny,
         ),
         Divider(),
         Text('Higher price'),
         Row(
           children: [
             Checkbox(
-              value: model.upperPriceRangeIsAny,
+              value: state.upperPriceRangeIsAny,
               onChanged: (value) => bloc.add(ToggleUpperPriceRange()),
             ),
             Text('Any')
           ],
         ),
         _buildLabeledSlider(
-            model.upperPriceRange,
+            state.upperPriceRange,
             (val) => bloc.add(SetUpperPriceRange(val.round())),
-            !model.upperPriceRangeIsAny),
+            !state.upperPriceRangeIsAny),
       ],
     );
   }
@@ -133,48 +132,30 @@ class FilterBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildStoresBody(BuildContext context, FilterSheetModel model) {
+  Widget _buildStoresBody(BuildContext context, FilterSheetState state) {
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
     return Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Checkbox(
-              value: model.storeSelectionIsAny,
-              onChanged: model.storeSelectionIsActive
-                  ? null
-                  : (val) {
-                      bloc.add(SetStoreSelection(val == true
-                          ? StoreSelectionState.Any
-                          : StoreSelectionState.Selected));
-                    },
+            TextButton(
+              onPressed: () => bloc.add(SetStoresValues(state.allStores)),
+              child: Text('all'),
             ),
-            Text(
-              'Any',
-              style: TextStyle(
-                  color: model.storeSelectionIsActive ? Colors.black38 : null),
+            TextButton(
+              onPressed: () => bloc.add(SetStoresValues(state.activeStores)),
+              child: Text('Only active'),
             ),
-            Divider(),
-            Checkbox(
-              value: model.storeSelectionIsActive,
-              onChanged: model.storeSelectionIsAny
-                  ? null
-                  : (val) {
-                      bloc.add(SetStoreSelection(val == true
-                          ? StoreSelectionState.Active
-                          : StoreSelectionState.Selected));
-                    },
-            ),
-            Text(
-              'Only active',
-              style: TextStyle(
-                  color: model.storeSelectionIsAny ? Colors.black38 : null),
+            TextButton(
+              child: Text('None'),
+              onPressed: () => bloc.add(SetStoresValues({})),
             ),
           ],
         ),
-        if (model.stores != null)
-          ...model.stores!
-              .map((v) => _buildStoreCheckbox(context, v, model))
+        if (state.stores != null)
+          ...state.stores!
+              .map((v) => _buildStoreCheckbox(context, v, state))
               .toList()
         else
           CircularProgressIndicator(),
@@ -183,32 +164,29 @@ class FilterBottomSheet extends StatelessWidget {
   }
 
   _buildStoreCheckbox(
-      BuildContext context, StoreModel storeModel, FilterSheetModel model) {
+      BuildContext context, StoreModel storeModel, FilterSheetState state) {
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
     return Row(
       children: [
         Checkbox(
-          value: model.isStoreSelected(storeModel),
-          onChanged: model.storeSelectionIsSelected
-              ? (_) {
-                  bloc.add(ToggleStoreValue(storeModel));
-                }
-              : null,
+          value: state.isStoreSelected(storeModel),
+          onChanged: (_) {
+            bloc.add(ToggleStoreValue(storeModel));
+          },
         ),
         StoreDisplay(
           model: storeModel,
           width: 20,
-          textColor: model.storeSelectionIsSelected ? null : Colors.black38,
         ),
       ],
     );
   }
 
-  Widget _buildSortBody(BuildContext context, FilterSheetModel model) {
+  Widget _buildSortBody(BuildContext context, FilterSheetState state) {
     return Container();
   }
 
-  Widget _buildRatingBody(BuildContext context, FilterSheetModel model) {
+  Widget _buildRatingBody(BuildContext context, FilterSheetState state) {
     return Container();
   }
 }
