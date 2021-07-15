@@ -4,9 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/deals/deal_page_builder.dart';
 import 'package:video_game_wish_list/app/deals/deal_tile.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_bloc.dart';
-import 'package:video_game_wish_list/app/filtering/filter_bottom_sheet.dart';
 import 'package:video_game_wish_list/models/deal_model.dart';
-import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 
 class HomePage extends StatelessWidget {
@@ -15,7 +13,7 @@ class HomePage extends StatelessWidget {
   static Widget create(BuildContext context) {
     final gameServer = Provider.of<GameServer>(context, listen: false);
     return BlocProvider<HomePageBloc>(
-      create: (context) => HomePageBloc([], server: gameServer),
+      create: (context) => HomePageBloc(HomePageState(), server: gameServer),
       child: HomePage._(),
     );
   }
@@ -28,9 +26,7 @@ class HomePage extends StatelessWidget {
         title: Text('Discover deals'),
         actions: [
           TextButton(
-            onPressed: () async {
-              await FilterBottomSheet.show(context, FilterModel());
-            },
+            onPressed: () => bloc.onFiltering(context),
             child: Icon(
               Icons.filter_list,
               color: Colors.black,
@@ -38,16 +34,16 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
-      body: BlocBuilder<HomePageBloc, List<DealModel>>(
-        builder: (context, data) {
+      body: BlocBuilder<HomePageBloc, HomePageState>(
+        builder: (context, state) {
           return ListView.separated(
               separatorBuilder: (_, __) => Divider(),
-              itemCount: data.length + (bloc.hasMorePages ? 1 : 0),
+              itemCount: state.dealCount + (bloc.hasMorePages ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index == data.length)
+                if (index == state.dealCount)
                   return Center(child: CircularProgressIndicator());
                 bloc.onRender(index);
-                return _buildGridItem(context, data[index]);
+                return _buildGridItem(context, state.deals[index]);
               });
         },
       ),
