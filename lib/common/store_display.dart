@@ -28,9 +28,18 @@ class StoreDisplay extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-          child: Text(
-            model.name,
-            style: TextStyle(color: textColor),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                model.name,
+                style: TextStyle(color: textColor),
+              ),
+              if (!model.isActive)
+                Text('Inactive',
+                    style: TextStyle(color: Colors.red, fontSize: 10))
+            ],
           ),
         ),
         SizedBox(width: 50),
