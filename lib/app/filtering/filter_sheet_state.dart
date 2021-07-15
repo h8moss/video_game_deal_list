@@ -1,8 +1,8 @@
 import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 
-class FilterSheetModel {
-  FilterSheetModel({
+class FilterSheetState {
+  FilterSheetState({
     this.lowerPriceRange: 0,
     this.lowerPriceRangeIsAny: true,
     this.upperPriceRange: 49,
@@ -10,27 +10,37 @@ class FilterSheetModel {
     this.sectionsExpansions: const {},
     this.stores,
     this.storeSelections: const {},
-    StoreSelectionState storeSelectionState: StoreSelectionState.Any,
-  }) : _storeSelectionState = storeSelectionState;
+  });
 
-  FilterSheetModel updateWith({
+  FilterSheetState.fromFilter(FilterModel filter)
+      : lowerPriceRange = filter.lowerPrice ?? 0,
+        lowerPriceRangeIsAny = filter.lowerPrice == null,
+        sectionsExpansions = const {},
+        storeSelections = Map.unmodifiable(filter.stores
+            .fold<Map<StoreModel, bool>>(
+                {},
+                (previousValue, element) =>
+                    previousValue..addAll({element: true}))),
+        stores = null,
+        upperPriceRange = filter.upperPrice ?? 0,
+        upperPriceRangeIsAny = filter.upperPrice == null;
+
+  FilterSheetState updateWith({
     bool? lowerPriceRangeIsAny,
     bool? upperPriceRangeIsAny,
     int? lowerPriceRange,
     int? upperPriceRange,
     FilterModel? filterModel,
     Map<FilterSheetSections, bool>? sectionsExpansions,
-    StoreSelectionState? storeSelectionState,
     List<StoreModel>? stores,
     Map<StoreModel, bool>? storeSelections,
   }) {
-    return FilterSheetModel(
+    return FilterSheetState(
       lowerPriceRange: lowerPriceRange ?? this.lowerPriceRange,
       lowerPriceRangeIsAny: lowerPriceRangeIsAny ?? this.lowerPriceRangeIsAny,
       upperPriceRange: upperPriceRange ?? this.upperPriceRange,
       upperPriceRangeIsAny: upperPriceRangeIsAny ?? this.upperPriceRangeIsAny,
       sectionsExpansions: sectionsExpansions ?? this.sectionsExpansions,
-      storeSelectionState: storeSelectionState ?? _storeSelectionState,
       stores: stores ?? this.stores,
       storeSelections: storeSelections ?? this.storeSelections,
     );
@@ -43,19 +53,9 @@ class FilterSheetModel {
   final int upperPriceRange;
 
   final Map<FilterSheetSections, bool> sectionsExpansions;
-  final StoreSelectionState _storeSelectionState;
 
   final List<StoreModel>? stores;
   final Map<StoreModel, bool> storeSelections;
-
-  bool get storeSelectionIsAny =>
-      _storeSelectionState == StoreSelectionState.Any;
-
-  bool get storeSelectionIsSelected =>
-      _storeSelectionState == StoreSelectionState.Selected;
-
-  bool get storeSelectionIsActive =>
-      _storeSelectionState == StoreSelectionState.Active;
 
   Map<StoreModel, bool> get activeStores {
     if (stores != null) {
@@ -63,6 +63,16 @@ class FilterSheetModel {
         <StoreModel, bool>{},
         (previousValue, element) =>
             previousValue..addAll({element: element.isActive}),
+      );
+    }
+    return {};
+  }
+
+  Map<StoreModel, bool> get allStores {
+    if (stores != null) {
+      return stores!.fold(
+        {},
+        (previousValue, element) => previousValue..addAll({element: true}),
       );
     }
     return {};
@@ -78,7 +88,7 @@ class FilterSheetModel {
   }
 
   bool isStoreSelected(StoreModel store) {
-    return storeSelections[store] ?? true;
+    return storeSelections[store] ?? false;
   }
 }
 
@@ -87,10 +97,4 @@ enum FilterSheetSections {
   Stores,
   Sorting,
   Rating,
-}
-
-enum StoreSelectionState {
-  Any,
-  Selected,
-  Active,
 }

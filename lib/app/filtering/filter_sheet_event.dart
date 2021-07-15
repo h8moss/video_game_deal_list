@@ -1,4 +1,5 @@
-import 'package:video_game_wish_list/app/filtering/filter_sheet_model.dart';
+import 'package:video_game_wish_list/app/filtering/filter_sheet_state.dart';
+import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 
 class FilterSheetEvent {}
@@ -32,12 +33,6 @@ class SetExpandedPanel extends FilterSheetEvent {
   final bool state;
 }
 
-class SetStoreSelection extends FilterSheetEvent {
-  SetStoreSelection(this.value);
-
-  StoreSelectionState value;
-}
-
 class SetStores extends FilterSheetEvent {
   SetStores(this.value);
 
@@ -48,4 +43,15 @@ class ToggleStoreValue extends FilterSheetEvent {
   ToggleStoreValue(this.store);
 
   StoreModel store;
+}
+
+class UpdateWithModel extends FilterSheetEvent {
+  UpdateWithModel(this.model);
+
+  FilterModel model;
+}
+
+class SetStoresValues extends FilterSheetEvent {
+  SetStoresValues(this.value);
+  Map<StoreModel, bool> value;
 }
