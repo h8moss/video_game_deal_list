@@ -4,8 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/deals/deal_page_builder.dart';
 import 'package:video_game_wish_list/app/deals/deal_tile.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_bloc.dart';
+import 'package:video_game_wish_list/app/home_page/home_page_event.dart';
 import 'package:video_game_wish_list/models/deal_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
+
+import 'home_page_state.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage._({Key? key}) : super(key: key);
@@ -26,7 +29,7 @@ class HomePage extends StatelessWidget {
         title: Text('Discover deals'),
         actions: [
           TextButton(
-            onPressed: () => bloc.onFiltering(context),
+            onPressed: () => bloc.add(FilterButtonPressedEvent(context)),
             child: Icon(
               Icons.filter_list,
               color: Colors.black,
@@ -36,15 +39,20 @@ class HomePage extends StatelessWidget {
       ),
       body: BlocBuilder<HomePageBloc, HomePageState>(
         builder: (context, state) {
-          return ListView.separated(
-              separatorBuilder: (_, __) => Divider(),
-              itemCount: state.dealCount + (bloc.hasMorePages ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == state.dealCount)
-                  return Center(child: CircularProgressIndicator());
-                bloc.onRender(index);
-                return _buildGridItem(context, state.deals[index]);
-              });
+          if (state.deals != null && state.dealCount != 0)
+            return ListView.separated(
+                separatorBuilder: (_, __) => Divider(),
+                itemCount: state.dealCount + (bloc.hasMorePages ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == state.dealCount)
+                    return Center(child: CircularProgressIndicator());
+                  bloc.add(RenderItemEvent(index));
+                  return _buildGridItem(context, state.deals![index]);
+                });
+          else if (state.deals != null)
+            return Center(child: Text('Nothing here'));
+          else
+            return Center(child: CircularProgressIndicator());
         },
       ),
     );
