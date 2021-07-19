@@ -5,6 +5,7 @@ import 'package:video_game_wish_list/app/filtering/filter_sheet_bloc.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_event.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_state.dart';
 import 'package:video_game_wish_list/common/store_display.dart';
+import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
@@ -186,14 +187,14 @@ class FilterBottomSheet extends StatelessWidget {
   Widget _buildSortBody(BuildContext context, FilterSheetState state) {
     return Column(
       children: [
-        for (DealSorting sort in DealSorting.values)
+        for (DealSortingStyle sort in DealSortingStyle.values)
           _buildSortDisplay(context, state, sort),
       ],
     );
   }
 
   Widget _buildSortDisplay(
-      BuildContext context, FilterSheetState state, DealSorting sort) {
+      BuildContext context, FilterSheetState state, DealSortingStyle sort) {
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
     bool? isDescending = state.isDealDescending(sort);
     Widget icon = isDescending == true

@@ -1,4 +1,5 @@
 import 'package:video_game_wish_list/app/filtering/filter_sheet_state.dart';
+import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 
@@ -59,5 +60,5 @@ class SetStoresValues extends FilterSheetEvent {
 class SetSort extends FilterSheetEvent {
   SetSort(this.sort);
 
-  DealSorting sort;
+  DealSortingStyle sort;
 }

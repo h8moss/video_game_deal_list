@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 
+import 'deal_sorting_Style.dart';
+
 class FilterModel {
   const FilterModel({
     this.upperPrice,
     this.lowerPrice,
     this.stores: const [],
-    this.sorting: DealSorting.Rating,
+    this.sorting: DealSortingStyle.Rating,
     this.isDescending: true,
     this.metacriticScore,
     this.steamScore,
@@ -19,7 +21,7 @@ class FilterModel {
       {int? upperPrice,
       int? lowerPrice,
       List<StoreModel>? stores,
-      DealSorting? sorting,
+      DealSortingStyle? sorting,
       bool? isDescending,
       int? metacriticScore,
       int? steamScore}) {
@@ -37,7 +39,7 @@ class FilterModel {
   final int? upperPrice;
   final int? lowerPrice;
   final List<StoreModel> stores;
-  final DealSorting sorting;
+  final DealSortingStyle sorting;
   final bool isDescending;
   final int? metacriticScore;
   final int? steamScore;
@@ -67,16 +69,4 @@ class FilterModel {
         hashList(stores),
         upperPrice,
       );
-}
-
-enum DealSorting {
-  Rating, // default
-  Title,
-  Savings,
-  Price,
-  Metacritic,
-  Reviews,
-  Release,
-  Store,
-  Recent,
 }

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:video_game_wish_list/models/deal_model.dart';
+import 'package:video_game_wish_list/models/deal_results.dart';
+import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 
@@ -9,10 +11,10 @@ class GameServer {
   GameServer();
 
   Dio _dio = Dio();
-  static String domain = 'https://www.cheapshark.com/api/1.0';
+  static String _domain = 'https://www.cheapshark.com/api/1.0';
 
-  static String get dealsUrl => '$domain/deals';
-  static String get storesUrl => '$domain/stores';
+  static String get dealsUrl => '$_domain/deals';
+  static String get storesUrl => '$_domain/stores';
 
   /// asynchronously fetch the games from the cheap shark api from the specified
   /// [page]
@@ -78,7 +80,7 @@ class GameServer {
     if (filter.lowerPrice != null) result += 'lowerPrice=${filter.lowerPrice}&';
     if (filter.metacriticScore != null)
       result += 'metacritic=${filter.metacriticScore}&';
-    if (filter.sorting != DealSorting.Rating)
+    if (filter.sorting != DealSortingStyle.Rating)
       result += 'sortBy=${_getSortTitle(filter.sorting)}&';
     if (filter.steamScore != null)
       result += 'steamRating=${filter.steamScore}&';
@@ -96,39 +98,26 @@ class GameServer {
     return result.substring(0, result.length - 1);
   }
 
-  String _getSortTitle(DealSorting sorting) {
+  String _getSortTitle(DealSortingStyle sorting) {
     switch (sorting) {
-      case DealSorting.Metacritic:
+      case DealSortingStyle.Metacritic:
         return 'Metacritic';
-      case DealSorting.Price:
+      case DealSortingStyle.Price:
         return 'Price';
-      case DealSorting.Rating:
+      case DealSortingStyle.Rating:
         return 'DealRating';
-      case DealSorting.Title:
+      case DealSortingStyle.Title:
         return 'Title';
-      case DealSorting.Savings:
+      case DealSortingStyle.Savings:
         return 'Savings';
-      case DealSorting.Reviews:
+      case DealSortingStyle.Reviews:
         return 'Reviews';
-      case DealSorting.Release:
+      case DealSortingStyle.Release:
         return 'Release';
-      case DealSorting.Store:
+      case DealSortingStyle.Store:
         return 'Store';
-      case DealSorting.Recent:
+      case DealSortingStyle.Recent:
         return 'recent';
     }
   }
-}
-
-class DealResults {
-  DealResults({
-    required this.currentResults,
-    required this.page,
-    required this.results,
-    required this.totalPages,
-  });
-  final int page;
-  final int totalPages;
-  final int currentResults;
-  final List<DealModel> results;
 }

@@ -1,3 +1,4 @@
+import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 
@@ -13,7 +14,7 @@ class FilterSheetState {
     this.metacriticScore: 0,
     this.metacriticScoreIsAny: true,
     this.isDescending: true,
-    this.sorting: DealSorting.Rating,
+    this.sorting: DealSortingStyle.Rating,
   });
 
   FilterSheetState.fromFilter(FilterModel filter)
@@ -45,7 +46,7 @@ class FilterSheetState {
     Map<StoreModel, bool>? storeSelections,
     int? metacriticScore,
     bool? metacriticScoreIsAny,
-    DealSorting? sorting,
+    DealSortingStyle? sorting,
     bool? isDescending,
   }) {
     return FilterSheetState(
@@ -77,7 +78,7 @@ class FilterSheetState {
   final bool metacriticScoreIsAny;
   final int metacriticScore;
 
-  final DealSorting sorting;
+  final DealSortingStyle sorting;
   final bool isDescending;
 
   Map<StoreModel, bool> get activeStores {
@@ -124,7 +125,7 @@ class FilterSheetState {
     return storeSelections[store] ?? false;
   }
 
-  bool? isDealDescending(DealSorting dealSorting) {
+  bool? isDealDescending(DealSortingStyle dealSorting) {
     if (dealSorting == sorting) return isDescending;
   }
 }
