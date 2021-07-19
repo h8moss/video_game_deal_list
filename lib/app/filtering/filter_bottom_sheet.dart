@@ -18,17 +18,18 @@ class FilterBottomSheet extends StatelessWidget {
 
   final FilterModel filterModel;
 
-  static Future<FilterModel> show(
+  static Future<FilterModel?> show(
       BuildContext context, FilterModel model) async {
     final server = Provider.of<GameServer>(context, listen: false);
     final FilterModel? resultModel = await showModalBottomSheet(
       context: context,
       builder: (_) => BlocProvider<FilterSheetBloc>(
         child: FilterBottomSheet(filterModel: model),
-        create: (_) => FilterSheetBloc(FilterSheetState(), server),
+        create: (_) =>
+            FilterSheetBloc(FilterSheetState.fromFilter(model), server),
       ),
     ) as FilterModel?;
-    return resultModel ?? model;
+    return resultModel;
   }
 
   @override
@@ -183,7 +184,42 @@ class FilterBottomSheet extends StatelessWidget {
   }
 
   Widget _buildSortBody(BuildContext context, FilterSheetState state) {
-    return Container();
+    return Column(
+      children: [
+        for (DealSorting sort in DealSorting.values)
+          _buildSortDisplay(context, state, sort),
+      ],
+    );
+  }
+
+  Widget _buildSortDisplay(
+      BuildContext context, FilterSheetState state, DealSorting sort) {
+    final bloc = BlocProvider.of<FilterSheetBloc>(context);
+    bool? isDescending = state.isDealDescending(sort);
+    Widget icon = isDescending == true
+        ? Icon(Icons.arrow_downward)
+        : isDescending == false
+            ? Icon(Icons.arrow_upward)
+            : Container();
+
+    return Column(
+      children: [
+        TextButton(
+          onPressed: () => bloc.add(SetSort(sort)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(bloc.dealSortingNames(sort)),
+              SizedBox(
+                width: 20,
+                child: icon,
+              )
+            ],
+          ),
+        ),
+        Divider(),
+      ],
+    );
   }
 
   Widget _buildRatingBody(BuildContext context, FilterSheetState state) {
