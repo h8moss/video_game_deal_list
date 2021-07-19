@@ -10,6 +10,10 @@ class FilterSheetState {
     this.sectionsExpansions: const {},
     this.stores,
     this.storeSelections: const {},
+    this.metacriticScore: 0,
+    this.metacriticScoreIsAny: true,
+    this.isDescending: true,
+    this.sorting: DealSorting.Rating,
   });
 
   FilterSheetState.fromFilter(FilterModel filter)
@@ -22,6 +26,11 @@ class FilterSheetState {
                 (previousValue, element) =>
                     previousValue..addAll({element: true}))),
         stores = null,
+        metacriticScore =
+            filter.metacriticScore != null ? filter.metacriticScore! : 0,
+        metacriticScoreIsAny = filter.metacriticScore == null,
+        sorting = filter.sorting,
+        isDescending = filter.isDescending,
         upperPriceRange = filter.upperPrice ?? 0,
         upperPriceRangeIsAny = filter.upperPrice == null;
 
@@ -34,6 +43,10 @@ class FilterSheetState {
     Map<FilterSheetSections, bool>? sectionsExpansions,
     List<StoreModel>? stores,
     Map<StoreModel, bool>? storeSelections,
+    int? metacriticScore,
+    bool? metacriticScoreIsAny,
+    DealSorting? sorting,
+    bool? isDescending,
   }) {
     return FilterSheetState(
       lowerPriceRange: lowerPriceRange ?? this.lowerPriceRange,
@@ -43,6 +56,10 @@ class FilterSheetState {
       sectionsExpansions: sectionsExpansions ?? this.sectionsExpansions,
       stores: stores ?? this.stores,
       storeSelections: storeSelections ?? this.storeSelections,
+      metacriticScore: metacriticScore ?? this.metacriticScore,
+      metacriticScoreIsAny: metacriticScoreIsAny ?? this.metacriticScoreIsAny,
+      sorting: sorting ?? this.sorting,
+      isDescending: isDescending ?? this.isDescending,
     );
   }
 
@@ -56,6 +73,12 @@ class FilterSheetState {
 
   final List<StoreModel>? stores;
   final Map<StoreModel, bool> storeSelections;
+
+  final bool metacriticScoreIsAny;
+  final int metacriticScore;
+
+  final DealSorting sorting;
+  final bool isDescending;
 
   Map<StoreModel, bool> get activeStores {
     if (stores != null) {
@@ -79,8 +102,18 @@ class FilterSheetState {
   }
 
   FilterModel get filterModel {
-    // TODO: Implement this
-    return FilterModel();
+    var selectedStores = Map.of(storeSelections)
+      ..removeWhere((key, value) => !value);
+    return FilterModel(
+      lowerPrice: lowerPriceRangeIsAny ? null : lowerPriceRange,
+      stores: selectedStores.keys.toList(),
+      upperPrice: upperPriceRangeIsAny ? null : upperPriceRange,
+      isDescending: isDescending,
+      sorting: sorting,
+      //! everything below here is not implemented
+      metacriticScore: null,
+      steamScore: null,
+    );
   }
 
   bool getSectionExpansion(FilterSheetSections section) {
@@ -89,6 +122,10 @@ class FilterSheetState {
 
   bool isStoreSelected(StoreModel store) {
     return storeSelections[store] ?? false;
+  }
+
+  bool? isDealDescending(DealSorting dealSorting) {
+    if (dealSorting == sorting) return isDescending;
   }
 }
 
