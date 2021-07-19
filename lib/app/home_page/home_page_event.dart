@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:video_game_wish_list/models/deal_model.dart';
+import 'package:video_game_wish_list/models/filter_model.dart';
 
 class HomePageEvent {
   HomePageEvent();
@@ -13,5 +15,25 @@ class AppendDealsEvent extends HomePageEvent {
 class SetDealsEvent extends HomePageEvent {
   SetDealsEvent(this.deals) : super();
 
-  final List<DealModel> deals;
+  final List<DealModel>? deals;
 }
+
+class SetFilterEvent extends HomePageEvent {
+  SetFilterEvent(this.filter);
+
+  FilterModel filter;
+}
+
+class RenderItemEvent extends HomePageEvent {
+  RenderItemEvent(this.index);
+
+  int index;
+}
+
+class FilterButtonPressedEvent extends HomePageEvent {
+  FilterButtonPressedEvent(this.context);
+
+  BuildContext context;
+}
+
+class GetInitialPageEvent extends HomePageEvent {}

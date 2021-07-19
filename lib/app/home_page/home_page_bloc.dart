@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:video_game_wish_list/app/filtering/filter_bottom_sheet.dart';
-import 'package:video_game_wish_list/models/deal_model.dart';
-import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 
 import 'home_page_event.dart';
