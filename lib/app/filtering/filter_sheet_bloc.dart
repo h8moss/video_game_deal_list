@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 
@@ -32,7 +33,15 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
       yield state.updateWith(stores: event.value);
     else if (event is SetStoresValues)
       yield state.updateWith(storeSelections: event.value);
-    else if (event is ToggleStoreValue) {
+    else if (event is SetSort) {
+      DealSorting sort = event.sort;
+      bool? isSelected = state.isDealDescending(sort);
+      if (isSelected != true)
+        yield state.updateWith(sorting: sort, isDescending: true);
+      else
+        yield state.updateWith(
+            sorting: sort, isDescending: false); // test this!
+    } else if (event is ToggleStoreValue) {
       if (state.stores != null) {
         yield _setStoreSelection(
             event.store, !state.isStoreSelected(event.store));
@@ -65,6 +74,29 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
         return 'Sorting';
       case FilterSheetSections.Stores:
         return 'Stores';
+    }
+  }
+
+  String dealSortingNames(DealSorting sorting) {
+    switch (sorting) {
+      case DealSorting.Rating:
+        return 'Deal rating';
+      case DealSorting.Title:
+        return 'Title';
+      case DealSorting.Savings:
+        return 'Savings';
+      case DealSorting.Price:
+        return 'Price';
+      case DealSorting.Metacritic:
+        return 'Metacritic score';
+      case DealSorting.Reviews:
+        return 'Reviews';
+      case DealSorting.Release:
+        return 'Release date';
+      case DealSorting.Store:
+        return 'Store';
+      case DealSorting.Recent:
+        return 'Recent';
     }
   }
 }

@@ -55,3 +55,9 @@ class SetStoresValues extends FilterSheetEvent {
   SetStoresValues(this.value);
   Map<StoreModel, bool> value;
 }
+
+class SetSort extends FilterSheetEvent {
+  SetSort(this.sort);
+
+  DealSorting sort;
+}
