@@ -5,10 +5,18 @@ import 'package:video_game_wish_list/models/store_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 
 class StoreDisplayBuilder extends StatelessWidget {
-  const StoreDisplayBuilder({Key? key, required this.storeID})
-      : super(key: key);
+  const StoreDisplayBuilder({
+    Key? key,
+    required this.storeID,
+    this.height,
+    this.textColor,
+    this.width,
+  }) : super(key: key);
 
   final int storeID;
+  final double? height;
+  final double? width;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +26,13 @@ class StoreDisplayBuilder extends StatelessWidget {
       stream: store,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
-          return Center(child: StoreDisplay(model: snapshot.data!));
+          return Center(
+              child: StoreDisplay(
+            model: snapshot.data!,
+            height: height,
+            textColor: textColor,
+            width: width,
+          ));
         } else if (snapshot.hasError) {
           return Text('Could not find the store');
         }
