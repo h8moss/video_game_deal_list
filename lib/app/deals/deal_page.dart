@@ -53,7 +53,11 @@ class DealPage extends StatelessWidget {
                 'at',
                 style: TextStyle(color: Colors.black38),
               )),
-              Center(child: StoreDisplayBuilder(storeID: model.storeId)),
+              Center(
+                  child: StoreDisplayBuilder(
+                storeID: model.storeId,
+                width: 50,
+              )),
             ],
           ),
         ),
