@@ -18,37 +18,51 @@ class UpdateWithModel extends FilterSheetEvent {
   FilterModel model;
 }
 
-class SetStoreSelection extends FilterSheetEvent {
-  SetStoreSelection(this.value, this.state);
+class AddStore extends FilterSheetEvent {
+  AddStore(this.store);
+  StoreModel store;
+}
 
-  final StoreModel value;
-  final bool state;
+class RemoveStore extends FilterSheetEvent {
+  RemoveStore(this.store);
+
+  StoreModel store;
 }
 
 class SetFilterValues extends FilterSheetEvent {
   SetFilterValues({
-    this.sort,
-    this.storeValues,
-    this.stores,
-    this.upperPriceRange,
-    this.lowerPriceRange,
-    this.upperPriceRangeIsAny,
-    this.lowerPriceRangeIsAny,
+    this.sorting,
+    this.upperPrice,
+    this.lowerPrice,
+    this.useUpperPrice,
+    this.useLowerPrice,
     this.metacriticScore,
     this.steamScore,
-    this.metacriticScoreIsAny,
-    this.steamScoreIsAny,
+    this.useMetacriticScore,
+    this.useSteamScore,
+    this.stores,
+    this.isAAA,
+    this.isActive,
+    this.steamWorks,
   });
 
-  final DealSortingStyle? sort;
-  final Map<StoreModel, bool>? storeValues;
+  final DealSortingStyle? sorting;
   final List<StoreModel>? stores;
-  final int? upperPriceRange;
-  final int? lowerPriceRange;
-  final bool? upperPriceRangeIsAny;
-  final bool? lowerPriceRangeIsAny;
+  final int? upperPrice;
+  final int? lowerPrice;
+  final bool? useUpperPrice;
+  final bool? useLowerPrice;
   final int? metacriticScore;
   final int? steamScore;
-  final bool? metacriticScoreIsAny;
-  final bool? steamScoreIsAny;
+  final bool? useMetacriticScore;
+  final bool? useSteamScore;
+  final bool? isActive;
+  final bool? isAAA;
+  final bool? steamWorks;
+}
+
+class SetAllStores extends FilterSheetEvent {
+  SetAllStores(this.value);
+
+  List<StoreModel>? value;
 }

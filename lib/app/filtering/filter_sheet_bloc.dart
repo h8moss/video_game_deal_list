@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
-import 'package:video_game_wish_list/common/models/store_model.dart';
 import 'package:video_game_wish_list/common/services/game_server.dart';
 
 import 'filter_sheet_event.dart';
@@ -10,7 +9,7 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
   FilterSheetBloc(FilterSheetState initialState, GameServer server)
       : super(initialState) {
     server.getAllStores().then((value) {
-      add(SetFilterValues(stores: value));
+      add(SetAllStores(value));
     });
   }
 
@@ -20,10 +19,14 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
       yield* _setFilterValues(event);
     else if (event is SetExpandedPanel)
       yield* _setExpandedPanel(event);
-    else if (event is SetStoreSelection)
-      yield* _setStoreSelection(event);
+    else if (event is AddStore)
+      yield* _addStore(event);
+    else if (event is SetAllStores)
+      yield* _setAllStores(event);
+    else if (event is RemoveStore)
+      yield* _removeStore(event);
     else if (event is UpdateWithModel)
-      yield FilterSheetState.fromFilter(event.model);
+      yield* _updateWithModel(event);
     else
       throw UnimplementedError();
   }
@@ -34,35 +37,55 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
     yield state.updateWith(sectionsExpansions: newMap);
   }
 
-  Stream<FilterSheetState> _setStoreSelection(SetStoreSelection event) async* {
-    Map<StoreModel, bool> newMap = Map.of(state.storeSelections);
-    newMap[event.value] = event.state;
-    yield state.updateWith(storeSelections: newMap);
+  Stream<FilterSheetState> _addStore(AddStore event) async* {
+    var newStores = List.of(state.filterModel.stores);
+    if (!newStores.contains(event.store)) newStores.add(event.store);
+    yield state.updateWith(
+        filterModel: state.filterModel.updateWith(stores: newStores));
+  }
+
+  Stream<FilterSheetState> _removeStore(RemoveStore event) async* {
+    var newStores = List.of(state.filterModel.stores);
+    newStores.remove(event.store);
+    yield state.updateWith(
+        filterModel: state.filterModel.updateWith(stores: newStores));
   }
 
   Stream<FilterSheetState> _setFilterValues(SetFilterValues event) async* {
-    bool descendingValue = state.isDescending;
-    if (event.sort != null) {
-      bool? currentDescending = state.isSortDescending(event.sort!);
+    bool descendingValue = state.filterModel.isDescending;
+    if (event.sorting != null) {
+      bool? currentDescending = state.isSortDescending(event.sorting!);
       if (currentDescending != true)
         descendingValue = true;
       else
         descendingValue = false;
     }
     yield state.updateWith(
-      lowerPriceRange: event.lowerPriceRange,
-      metacriticScore: event.metacriticScore,
-      lowerPriceRangeIsAny: event.lowerPriceRangeIsAny,
-      metacriticScoreIsAny: event.metacriticScoreIsAny,
-      sorting: event.sort,
-      steamScore: event.steamScore,
-      steamScoreIsAny: event.steamScoreIsAny,
-      storeSelections: event.storeValues,
-      stores: event.stores,
-      upperPriceRange: event.upperPriceRange,
-      upperPriceRangeIsAny: event.upperPriceRangeIsAny,
-      isDescending: descendingValue,
+      filterModel: state.filterModel.updateWith(
+        lowerPrice: event.lowerPrice,
+        metacriticScore: event.metacriticScore,
+        useLowerPrice: event.useLowerPrice,
+        useMetacriticScore: event.useMetacriticScore,
+        sorting: event.sorting,
+        steamScore: event.steamScore,
+        useSteamScore: event.useSteamScore,
+        stores: event.stores,
+        upperPrice: event.upperPrice,
+        useUpperPrice: event.useUpperPrice,
+        isDescending: descendingValue,
+        isAAA: event.isAAA,
+        isActive: event.isActive,
+        steamWorks: event.steamWorks,
+      ),
     );
+  }
+
+  Stream<FilterSheetState> _setAllStores(SetAllStores event) async* {
+    yield state.updateWith(allStores: event.value);
+  }
+
+  Stream<FilterSheetState> _updateWithModel(UpdateWithModel event) async* {
+    yield state.updateWith(filterModel: event.model);
   }
 
   String filterSheetSectionsNames(FilterSheetSections section) {
