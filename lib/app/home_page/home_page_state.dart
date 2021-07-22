@@ -11,14 +11,31 @@ class HomePageState {
   final FilterModel filter;
 
   HomePageState updateWith({
-    List<DealModel>? deals,
+    List<DealModel>? deals = const [_MarkedDealModel()],
     FilterModel? filter,
   }) {
+    bool dealsDefault =
+        deals != null && deals.length == 1 && deals[0] is _MarkedDealModel;
     return HomePageState(
-      deals: deals ?? this.deals,
+      deals: dealsDefault ? this.deals : deals,
       filter: filter ?? this.filter,
     );
   }
 
   int get dealCount => deals?.length ?? 0;
+}
+
+/// Simple class that cannot be used outside of this file, this differentiates
+/// passing a null value and no value at all to deals in the update with method.
+class _MarkedDealModel extends DealModel {
+  const _MarkedDealModel()
+      : super(
+          gameName: '',
+          id: '0',
+          originalPrice: 0,
+          percentageOff: 0,
+          price: 0,
+          storeId: 0,
+          thumbnailUrl: '',
+        );
 }
