@@ -8,6 +8,8 @@ class HomePageBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // because we use this context to get the game server,
+    //we cant put the provider here
     return HomePage.create(context);
   }
 }
