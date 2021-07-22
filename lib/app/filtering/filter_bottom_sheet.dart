@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_bloc.dart';
-import 'package:video_game_wish_list/app/filtering/filter_sheet_event.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_state.dart';
 import 'package:video_game_wish_list/common/store_display.dart';
 import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
@@ -10,6 +9,7 @@ import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 import 'package:video_game_wish_list/services/game_server.dart';
 import '../../common/labeled_slider.dart';
+import 'filter_sheet_event.dart';
 
 typedef SectionBuilder = Widget Function(BuildContext, FilterSheetState);
 
@@ -51,8 +51,8 @@ class FilterBottomSheet extends StatelessWidget {
           ),
           ExpansionPanelList(
             animationDuration: Duration(seconds: 1),
-            expansionCallback: (index, isExpanded) => bloc
-                .add(ToggleExpandedPanel(FilterSheetSections.values[index])),
+            expansionCallback: (index, isExpanded) => bloc.add(SetExpandedPanel(
+                FilterSheetSections.values[index], !isExpanded)),
             children: [
               for (var item in FilterSheetSections.values)
                 ExpansionPanel(
@@ -79,6 +79,8 @@ class FilterBottomSheet extends StatelessWidget {
         return _buildSortBody;
       case FilterSheetSections.Rating:
         return _buildRatingBody;
+      case FilterSheetSections.Other:
+        return _buildOtherBody;
     }
   }
 
@@ -92,15 +94,16 @@ class FilterBottomSheet extends StatelessWidget {
             Checkbox(
                 value: state.lowerPriceRangeIsAny,
                 onChanged: (value) {
-                  bloc.add(ToggleLowerPriceRange());
+                  bloc.add(SetFilterValues(lowerPriceRangeIsAny: value));
                 }),
             Text('any'),
           ],
         ),
         _buildLabeledSlider(
           state.lowerPriceRange,
-          (val) => bloc.add(SetLowerPriceRange(val.round())),
+          (val) => bloc.add(SetFilterValues(lowerPriceRange: val.round())),
           !state.lowerPriceRangeIsAny,
+          true,
         ),
         Divider(),
         Text('Higher price'),
@@ -108,29 +111,33 @@ class FilterBottomSheet extends StatelessWidget {
           children: [
             Checkbox(
               value: state.upperPriceRangeIsAny,
-              onChanged: (value) => bloc.add(ToggleUpperPriceRange()),
+              onChanged: (value) =>
+                  bloc.add(SetFilterValues(upperPriceRangeIsAny: value)),
             ),
             Text('Any')
           ],
         ),
         _buildLabeledSlider(
             state.upperPriceRange,
-            (val) => bloc.add(SetUpperPriceRange(val.round())),
-            !state.upperPriceRangeIsAny),
+            (val) => bloc.add(SetFilterValues(upperPriceRange: val.round())),
+            !state.upperPriceRangeIsAny,
+            true),
       ],
     );
   }
 
   Widget _buildLabeledSlider(
-      int value, ValueChanged<double> callback, bool active) {
+      int value, ValueChanged<double> callback, bool active, bool useDollar) {
     return LabeledSlider(
-      labelText: (active ? value.toString() : 'any'),
+      labelText:
+          (active ? (value.toString() + (useDollar ? '\$' : '')) : 'any'),
       value: value.toDouble(),
       onChanged: active ? callback : null,
       divisions: 50,
       max: 49,
       min: 0,
-      secondaryLabel: (active ? value.toString() : '0') + '\$',
+      secondaryLabel:
+          (active ? value.toString() : '0') + (useDollar ? '\$' : ''),
     );
   }
 
@@ -142,16 +149,18 @@ class FilterBottomSheet extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             TextButton(
-              onPressed: () => bloc.add(SetStoresValues(state.allStores)),
+              onPressed: () =>
+                  bloc.add(SetFilterValues(storeValues: state.allStores)),
               child: Text('all'),
             ),
             TextButton(
-              onPressed: () => bloc.add(SetStoresValues(state.activeStores)),
+              onPressed: () =>
+                  bloc.add(SetFilterValues(storeValues: state.activeStores)),
               child: Text('Only active'),
             ),
             TextButton(
               child: Text('None'),
-              onPressed: () => bloc.add(SetStoresValues({})),
+              onPressed: () => bloc.add(SetFilterValues(storeValues: {})),
             ),
           ],
         ),
@@ -172,8 +181,8 @@ class FilterBottomSheet extends StatelessWidget {
       children: [
         Checkbox(
           value: state.isStoreSelected(storeModel),
-          onChanged: (_) {
-            bloc.add(ToggleStoreValue(storeModel));
+          onChanged: (value) {
+            bloc.add(SetStoreSelection(storeModel, value!));
           },
         ),
         StoreDisplay(
@@ -196,7 +205,7 @@ class FilterBottomSheet extends StatelessWidget {
   Widget _buildSortDisplay(
       BuildContext context, FilterSheetState state, DealSortingStyle sort) {
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
-    bool? isDescending = state.isDealDescending(sort);
+    bool? isDescending = state.isSortDescending(sort);
     Widget icon = isDescending == true
         ? Icon(Icons.arrow_downward)
         : isDescending == false
@@ -206,7 +215,7 @@ class FilterBottomSheet extends StatelessWidget {
     return Column(
       children: [
         TextButton(
-          onPressed: () => bloc.add(SetSort(sort)),
+          onPressed: () => bloc.add(SetFilterValues(sort: sort)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -224,6 +233,49 @@ class FilterBottomSheet extends StatelessWidget {
   }
 
   Widget _buildRatingBody(BuildContext context, FilterSheetState state) {
+    final bloc = BlocProvider.of<FilterSheetBloc>(context);
+    return Column(
+      children: [
+        Text('Metacritic Score'),
+        Row(
+          children: [
+            Checkbox(
+              value: state.metacriticScoreIsAny,
+              onChanged: (val) =>
+                  bloc.add(SetFilterValues(metacriticScoreIsAny: val)),
+            ),
+            Text('Any'),
+          ],
+        ),
+        _buildLabeledSlider(
+          state.metacriticScore,
+          (value) => bloc.add(SetFilterValues(metacriticScore: value.round())),
+          !state.metacriticScoreIsAny,
+          false,
+        ),
+        Divider(),
+        Text('Steam Score'),
+        Row(
+          children: [
+            Checkbox(
+              value: state.steamScoreIsAny,
+              onChanged: (val) =>
+                  bloc.add(SetFilterValues(steamScoreIsAny: val)),
+            ),
+            Text('Any'),
+          ],
+        ),
+        _buildLabeledSlider(
+          state.steamScore,
+          (value) => bloc.add(SetFilterValues(steamScore: value.round())),
+          !state.steamScoreIsAny,
+          false,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOtherBody(BuildContext context, FilterSheetState state) {
     return Container();
   }
 }
