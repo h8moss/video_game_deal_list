@@ -15,6 +15,8 @@ class FilterSheetState {
     this.metacriticScoreIsAny: true,
     this.isDescending: true,
     this.sorting: DealSortingStyle.Rating,
+    this.steamScore: 0,
+    this.steamScoreIsAny: true,
   });
 
   FilterSheetState.fromFilter(FilterModel filter)
@@ -32,6 +34,8 @@ class FilterSheetState {
         metacriticScoreIsAny = filter.metacriticScore == null,
         sorting = filter.sorting,
         isDescending = filter.isDescending,
+        steamScore = filter.steamScore ?? 0,
+        steamScoreIsAny = filter.steamScore == null,
         upperPriceRange = filter.upperPrice ?? 0,
         upperPriceRangeIsAny = filter.upperPrice == null;
 
@@ -46,6 +50,8 @@ class FilterSheetState {
     Map<StoreModel, bool>? storeSelections,
     int? metacriticScore,
     bool? metacriticScoreIsAny,
+    int? steamScore,
+    bool? steamScoreIsAny,
     DealSortingStyle? sorting,
     bool? isDescending,
   }) {
@@ -61,6 +67,8 @@ class FilterSheetState {
       metacriticScoreIsAny: metacriticScoreIsAny ?? this.metacriticScoreIsAny,
       sorting: sorting ?? this.sorting,
       isDescending: isDescending ?? this.isDescending,
+      steamScore: steamScore ?? this.steamScore,
+      steamScoreIsAny: steamScoreIsAny ?? this.steamScoreIsAny,
     );
   }
 
@@ -77,6 +85,9 @@ class FilterSheetState {
 
   final bool metacriticScoreIsAny;
   final int metacriticScore;
+
+  final int steamScore;
+  final bool steamScoreIsAny;
 
   final DealSortingStyle sorting;
   final bool isDescending;
@@ -111,9 +122,8 @@ class FilterSheetState {
       upperPrice: upperPriceRangeIsAny ? null : upperPriceRange,
       isDescending: isDescending,
       sorting: sorting,
-      //! everything below here is not implemented
-      metacriticScore: null,
-      steamScore: null,
+      metacriticScore: metacriticScoreIsAny ? null : metacriticScore,
+      steamScore: steamScoreIsAny ? null : steamScore,
     );
   }
 
@@ -125,7 +135,7 @@ class FilterSheetState {
     return storeSelections[store] ?? false;
   }
 
-  bool? isDealDescending(DealSortingStyle dealSorting) {
+  bool? isSortDescending(DealSortingStyle dealSorting) {
     if (dealSorting == sorting) return isDescending;
   }
 }
@@ -135,4 +145,5 @@ enum FilterSheetSections {
   Stores,
   Sorting,
   Rating,
+  Other,
 }
