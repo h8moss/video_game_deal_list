@@ -2,7 +2,7 @@ import 'package:video_game_wish_list/common/other/double_extension.dart';
 
 /// Video game deal Representation
 class DealModel {
-  DealModel({
+  const DealModel({
     required this.gameName,
     required this.price,
     required this.originalPrice,
@@ -36,13 +36,13 @@ class DealModel {
     );
   }
 
-  String id;
-  String gameName;
-  String thumbnailUrl;
-  double price;
-  double originalPrice;
-  int storeId;
-  double percentageOff;
+  final String id;
+  final String gameName;
+  final String thumbnailUrl;
+  final double price;
+  final double originalPrice;
+  final int storeId;
+  final double percentageOff;
 
   bool get isFree => price == 0;
 
