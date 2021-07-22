@@ -84,21 +84,23 @@ class GameServer {
     var result = '?';
     if (page != 0) result += 'pageNumber=$page&';
     if (!filter.isDescending) result += 'desc=1&';
-    if (filter.lowerPrice != null) result += 'lowerPrice=${filter.lowerPrice}&';
-    if (filter.metacriticScore != null)
+    if (filter.useLowerPrice) result += 'lowerPrice=${filter.lowerPrice}&';
+    if (filter.useMetacriticScore)
       result += 'metacritic=${filter.metacriticScore}&';
     if (filter.sorting != DealSortingStyle.Rating)
       result += 'sortBy=${_getSortTitle(filter.sorting)}&';
-    if (filter.steamScore != null)
-      result += 'steamRating=${filter.steamScore}&';
+    if (filter.useSteamScore) result += 'steamRating=${filter.steamScore}&';
     if (filter.stores.length != 0) {
       var storeText = filter.stores
           .fold('', (previousValue, element) => '$previousValue${element.id},');
-      storeText = storeText.substring(0, storeText.length - 2);
+      storeText = storeText.substring(0, storeText.length - 1);
 
       result += 'storeID=$storeText&';
     }
-    if (filter.upperPrice != null) result += 'upperPrice=${filter.upperPrice}&';
+    if (filter.useUpperPrice) result += 'upperPrice=${filter.upperPrice}&';
+    if (filter.isAAA) result += 'AAA=1&';
+    if (filter.isActive) result += 'onSale=1&';
+    if (filter.steamWorks) result += 'steamworks=1&';
 
     print(result.substring(0, result.length - 1));
 
