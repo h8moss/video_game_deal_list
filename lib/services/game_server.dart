@@ -7,6 +7,7 @@ import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/models/filter_model.dart';
 import 'package:video_game_wish_list/models/store_model.dart';
 
+/// API to connext to cheapshark and fetch deals.
 class GameServer {
   GameServer();
 
@@ -17,7 +18,7 @@ class GameServer {
   static String get storesUrl => '$_domain/stores';
 
   /// asynchronously fetch the games from the cheap shark api from the specified
-  /// [page]
+  /// [page] using the specified [filter] and with the specified [search]
   Future<DealResults> fetchGames(int page, FilterModel filter,
       [String search = '']) async {
     String query = _getQuery(page, filter, search);
@@ -37,14 +38,18 @@ class GameServer {
         'Could not connect to the cheap shark API: status code: ${response.statusCode}');
   }
 
-  Future<List<StoreModel>?> getAllStores() async {
+  /// Asynchronously returns a List of all stores as store models.
+  Future<List<StoreModel>> getAllStores() async {
     final response = await _dio.get(storesUrl);
     if (response.statusCode == 200) {
       List<dynamic> items = response.data;
       return items.map((e) => StoreModel.fromJson(e)).toList();
     }
+    throw HttpException('Could not connect to the API');
   }
 
+  /// Asynchronously returns a Single store model with the corresponding [storeID]
+  /// or null if no [storeID] matches.
   Stream<StoreModel?> getStore(int storeID) async* {
     yield null;
     final response = await _dio.get(storesUrl);
@@ -58,6 +63,8 @@ class GameServer {
       throw HttpException('Could not reach stores API: ${response.statusCode}');
   }
 
+  /// Asynchronously returns a Single deal model with the corresponding [dealID]
+  /// or null if no [dealID] matches.
   Stream<DealModel?> getDeal(String dealID) async* {
     yield null;
     final response = await _dio.get('$dealsUrl?id=$dealID');

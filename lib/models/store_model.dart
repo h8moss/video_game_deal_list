@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
+/// Simple model class for accepted stores.
 class StoreModel {
   StoreModel(
       {required this.id,

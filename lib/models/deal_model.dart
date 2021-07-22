@@ -1,5 +1,6 @@
 import 'package:video_game_wish_list/common/double_extension.dart';
 
+/// Video game deal Representation
 class DealModel {
   DealModel({
     required this.gameName,
