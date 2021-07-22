@@ -5,45 +5,11 @@ import 'package:video_game_wish_list/models/store_model.dart';
 
 class FilterSheetEvent {}
 
-class ToggleUpperPriceRange extends FilterSheetEvent {}
-
-class ToggleLowerPriceRange extends FilterSheetEvent {}
-
-class SetLowerPriceRange extends FilterSheetEvent {
-  SetLowerPriceRange(this.value);
-
-  final int value;
-}
-
-class SetUpperPriceRange extends FilterSheetEvent {
-  SetUpperPriceRange(this.value);
-
-  final int value;
-}
-
-class ToggleExpandedPanel extends FilterSheetEvent {
-  ToggleExpandedPanel(this.value);
-
-  final FilterSheetSections value;
-}
-
 class SetExpandedPanel extends FilterSheetEvent {
   SetExpandedPanel(this.value, this.state);
 
   final FilterSheetSections value;
   final bool state;
-}
-
-class SetStores extends FilterSheetEvent {
-  SetStores(this.value);
-
-  List<StoreModel> value;
-}
-
-class ToggleStoreValue extends FilterSheetEvent {
-  ToggleStoreValue(this.store);
-
-  StoreModel store;
 }
 
 class UpdateWithModel extends FilterSheetEvent {
@@ -52,13 +18,37 @@ class UpdateWithModel extends FilterSheetEvent {
   FilterModel model;
 }
 
-class SetStoresValues extends FilterSheetEvent {
-  SetStoresValues(this.value);
-  Map<StoreModel, bool> value;
+class SetStoreSelection extends FilterSheetEvent {
+  SetStoreSelection(this.value, this.state);
+
+  final StoreModel value;
+  final bool state;
 }
 
-class SetSort extends FilterSheetEvent {
-  SetSort(this.sort);
+class SetFilterValues extends FilterSheetEvent {
+  SetFilterValues({
+    this.sort,
+    this.storeValues,
+    this.stores,
+    this.upperPriceRange,
+    this.lowerPriceRange,
+    this.upperPriceRangeIsAny,
+    this.lowerPriceRangeIsAny,
+    this.metacriticScore,
+    this.steamScore,
+    this.metacriticScoreIsAny,
+    this.steamScoreIsAny,
+  });
 
-  DealSortingStyle sort;
+  final DealSortingStyle? sort;
+  final Map<StoreModel, bool>? storeValues;
+  final List<StoreModel>? stores;
+  final int? upperPriceRange;
+  final int? lowerPriceRange;
+  final bool? upperPriceRangeIsAny;
+  final bool? lowerPriceRangeIsAny;
+  final int? metacriticScore;
+  final int? steamScore;
+  final bool? metacriticScoreIsAny;
+  final bool? steamScoreIsAny;
 }
