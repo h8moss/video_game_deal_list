@@ -30,7 +30,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       yield state.updateWith(filter: event.filter);
       add(GetInitialPageEvent());
     } else if (event is GetInitialPageEvent) {
-      add(SetDealsEvent(null));
       await _getPage0();
     } else if (event is RenderItemEvent)
       _onRender(event.index);
@@ -64,6 +63,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   Future<void> _onFiltering(BuildContext context) async {
     final filter = await FilterBottomSheet.show(context, state.filter);
     if (filter != null) {
+      add(SetDealsEvent(null));
       add(SetFilterEvent(filter));
     }
   }
