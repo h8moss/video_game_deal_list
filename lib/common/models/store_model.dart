@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:equatable/equatable.dart';
 
 /// Simple model class for accepted stores.
-class StoreModel {
+class StoreModel extends Equatable {
   StoreModel(
       {required this.id,
       required this.isActive,
@@ -21,15 +21,6 @@ class StoreModel {
   final bool isActive;
   final String icon;
 
-  operator ==(dynamic other) {
-    return (other != null &&
-        other is StoreModel &&
-        other.icon == icon &&
-        other.id == id &&
-        other.isActive == isActive &&
-        other.name == name);
-  }
-
   @override
-  int get hashCode => hashValues(id, name, isActive, icon);
+  List<Object?> get props => [id, name, isActive, icon];
 }
