@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_bloc.dart';
-import 'package:video_game_wish_list/app/filtering/filter_sheet_state.dart';
-import 'package:video_game_wish_list/common/store_display.dart';
-import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
-import 'package:video_game_wish_list/models/filter_model.dart';
-import 'package:video_game_wish_list/models/store_model.dart';
-import 'package:video_game_wish_list/services/game_server.dart';
-import '../../common/labeled_slider.dart';
+import 'package:video_game_wish_list/app/filtering/models/filter_sheet_state.dart';
+import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/widgets/store_display.dart';
+import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
+import 'package:video_game_wish_list/common/models/store_model.dart';
+import '../../common/widgets/labeled_slider.dart';
 import 'filter_sheet_event.dart';
 
 typedef SectionBuilder = Widget Function(BuildContext, FilterSheetState);

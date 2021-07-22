@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:video_game_wish_list/models/deal_model.dart';
-import 'package:video_game_wish_list/models/deal_results.dart';
-import 'package:video_game_wish_list/models/deal_sorting_Style.dart';
-import 'package:video_game_wish_list/models/filter_model.dart';
-import 'package:video_game_wish_list/models/store_model.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_results.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
+import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
+import 'package:video_game_wish_list/common/models/store_model.dart';
 
 /// API to connext to cheapshark and fetch deals.
 class GameServer {

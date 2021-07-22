@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_game_wish_list/common/store_display.dart';
-import 'package:video_game_wish_list/models/store_model.dart';
-import 'package:video_game_wish_list/services/game_server.dart';
+import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/widgets/store_display.dart';
+import 'package:video_game_wish_list/common/models/store_model.dart';
 
 class StoreDisplayBuilder extends StatelessWidget {
   const StoreDisplayBuilder({

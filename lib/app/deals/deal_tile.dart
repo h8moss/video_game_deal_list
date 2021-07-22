@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:video_game_wish_list/common/price_tag.dart';
-import 'package:video_game_wish_list/models/deal_model.dart';
+import 'package:video_game_wish_list/common/widgets/price_tag.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
 
 class DealTile extends StatelessWidget {
   DealTile({required this.saleModel, required this.onPressed});

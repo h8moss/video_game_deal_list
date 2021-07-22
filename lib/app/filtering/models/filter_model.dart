@@ -2,9 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:video_game_wish_list/models/store_model.dart';
-
-import 'deal_sorting_Style.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
+import 'package:video_game_wish_list/common/models/store_model.dart';
 
 class FilterModel {
   const FilterModel({

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:video_game_wish_list/common/price_tag.dart';
-import 'package:video_game_wish_list/common/store_display_builder.dart';
-import 'package:video_game_wish_list/models/deal_model.dart';
+import 'package:video_game_wish_list/common/widgets/price_tag.dart';
+import 'package:video_game_wish_list/common/widgets/store_display_builder.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
 
 class DealPage extends StatelessWidget {
   const DealPage({Key? key, required this.model}) : super(key: key);

@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:video_game_wish_list/app/filtering/filter_bottom_sheet.dart';
-import 'package:video_game_wish_list/services/game_server.dart';
+import 'package:video_game_wish_list/common/services/game_server.dart';
 
 import 'home_page_event.dart';
 import 'home_page_state.dart';

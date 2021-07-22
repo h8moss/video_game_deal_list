@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_game_wish_list/common/error_page.dart';
-import 'package:video_game_wish_list/models/deal_model.dart';
+import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/widgets/error_page.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
 import 'package:video_game_wish_list/app/deals/deal_page.dart';
-import 'package:video_game_wish_list/services/game_server.dart';
 
 class DealPageBuilder extends StatelessWidget {
   const DealPageBuilder({Key? key, required this.dealID}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:video_game_wish_list/models/deal_model.dart';
-import 'package:video_game_wish_list/models/filter_model.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
+import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
 
 class HomePageEvent {
   HomePageEvent();

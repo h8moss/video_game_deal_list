@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_game_wish_list/models/store_model.dart';
+import 'package:video_game_wish_list/common/models/store_model.dart';
 
 class StoreDisplay extends StatelessWidget {
   const StoreDisplay({
