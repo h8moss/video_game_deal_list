@@ -37,3 +37,11 @@ class FilterButtonPressedEvent extends HomePageEvent {
 }
 
 class GetInitialPageEvent extends HomePageEvent {}
+
+class SetHasErrorEvent extends HomePageEvent {
+  SetHasErrorEvent(this.value);
+
+  bool value;
+}
+
+class RetryLoadingButtonEvent extends HomePageEvent {}
