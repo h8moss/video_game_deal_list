@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:video_game_wish_list/app/deals/models/deal_results.dart';
 import 'package:video_game_wish_list/app/filtering/filter_bottom_sheet.dart';
 import 'package:video_game_wish_list/common/services/game_server.dart';
 
@@ -11,7 +11,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     HomePageState initialState, {
     required this.server,
   }) : super(initialState) {
-    _getPage0();
+    add(GetInitialPageEvent());
   }
 
   final GameServer server;
@@ -23,48 +23,102 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   @override
   Stream<HomePageState> mapEventToState(HomePageEvent event) async* {
     if (event is AppendDealsEvent)
-      yield state.updateWith(deals: [...state.deals ?? [], ...event.deals]);
+      yield* _appendDeals(event);
     else if (event is SetDealsEvent)
-      yield state.updateWith(deals: event.deals);
-    else if (event is SetFilterEvent) {
-      yield state.updateWith(filter: event.filter);
-      add(GetInitialPageEvent());
-    } else if (event is GetInitialPageEvent) {
-      await _getPage0();
-    } else if (event is RenderItemEvent)
-      _onRender(event.index);
+      yield* _setDeals(event);
+    else if (event is SetFilterEvent)
+      yield* _setFilter(event);
+    else if (event is GetInitialPageEvent)
+      yield* _getInitialPage(event);
+    else if (event is RenderItemEvent)
+      yield* _renderItem(event);
     else if (event is FilterButtonPressedEvent)
-      _onFiltering(event.context);
+      yield* _filterButtonPressed(event);
+    else if (event is SetHasErrorEvent)
+      yield* _setHasError(event);
+    else if (event is RetryLoadingButtonEvent)
+      yield* _retryLoadingButton(event);
     else
       throw UnimplementedError();
   }
 
-  void _onRender(int i) async {
+  @override
+  void onError(Object error, StackTrace stackTrace) {
+    add(SetHasErrorEvent(true));
+    super.onError(error, stackTrace);
+  }
+
+  Stream<HomePageState> _appendDeals(AppendDealsEvent event) async* {
+    if (state.deals != null) {
+      yield state.updateWith(deals: [...state.deals!, ...event.deals]);
+    } else
+      yield state;
+  }
+
+  Stream<HomePageState> _setDeals(SetDealsEvent event) async* {
+    yield state.updateWith(deals: event.deals);
+  }
+
+  Stream<HomePageState> _setFilter(SetFilterEvent event) async* {
+    yield state.updateWith(filter: event.filter);
+  }
+
+  Stream<HomePageState> _getInitialPage(GetInitialPageEvent event) async* {
+    _currentPage = 0;
+    final deals = await _fetchGames();
+    if (deals != null) {
+      _totalPages = deals.totalPages;
+      add(SetDealsEvent(deals.results));
+    }
+  }
+
+  Stream<HomePageState> _renderItem(RenderItemEvent event) async* {
     int threshold = (_currentPage + 1) * 60 - 5;
-    print('rendering $i');
-    if (i >= threshold) {
-      print('Past threshold!');
-      if (hasMorePages) {
-        _currentPage++;
-        final items = await server.fetchGames(_currentPage, state.filter);
-        _totalPages = items.totalPages;
-        add(AppendDealsEvent(items.results));
+    print(event.index);
+    if (event.index > threshold && hasMorePages) {
+      _currentPage++;
+      final deals = await _fetchGames();
+      if (deals != null) {
+        _totalPages = deals.totalPages;
+        add(AppendDealsEvent(deals.results));
       }
     }
   }
 
-  Future<void> _getPage0() async {
-    final page0 = await server.fetchGames(0, state.filter);
-    _currentPage = 0;
-    _totalPages = page0.totalPages;
-    add(SetDealsEvent(page0.results));
+  Stream<HomePageState> _retryLoadingButton(
+      RetryLoadingButtonEvent event) async* {
+    final deals = await _fetchGames(_currentPage - 1);
+    if (deals != null) {
+      _totalPages = deals.totalPages;
+      _currentPage++;
+      add(AppendDealsEvent(deals.results));
+    }
   }
 
-  Future<void> _onFiltering(BuildContext context) async {
-    final filter = await FilterBottomSheet.show(context, state.filter);
+  Stream<HomePageState> _filterButtonPressed(
+      FilterButtonPressedEvent event) async* {
+    final filter = await FilterBottomSheet.show(event.context, state.filter);
     if (filter != null) {
       add(SetDealsEvent(null));
       add(SetFilterEvent(filter));
+      add(GetInitialPageEvent());
     }
+  }
+
+  Stream<HomePageState> _setHasError(SetHasErrorEvent event) async* {
+    yield state.updateWith(hasError: event.value);
+  }
+
+  Future<DealResults?> _fetchGames([int? page]) async {
+    if (page == null) page = _currentPage;
+    add(SetHasErrorEvent(false));
+    DealResults? games;
+    try {
+      games = await server.fetchGames(page, state.filter);
+    } catch (e) {
+      addError(e);
+      return null;
+    }
+    return games;
   }
 }
