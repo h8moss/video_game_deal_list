@@ -7,6 +7,7 @@ import 'package:video_game_wish_list/app/home_page/home_page_bloc.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_event.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
 import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/widgets/centered_message.dart';
 
 import 'home_page_state.dart';
 
@@ -39,18 +40,48 @@ class HomePage extends StatelessWidget {
       ),
       body: BlocBuilder<HomePageBloc, HomePageState>(
         builder: (context, state) {
-          if (state.deals != null && state.dealCount != 0)
+          if (state.hasError && state.dealCount == 0) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CenteredMessage(
+                  message: 'Something went wrong.',
+                  secondaryMessage: 'Please try again later',
+                ),
+                TextButton(
+                    onPressed: () => bloc.add(GetInitialPageEvent()),
+                    child: Icon(Icons.replay)),
+              ],
+            );
+          }
+          if (state.dealCount != 0)
             return ListView.separated(
                 separatorBuilder: (_, __) => Divider(),
-                itemCount: state.dealCount + (bloc.hasMorePages ? 1 : 0),
+                itemCount: state.dealCount +
+                    (bloc.hasMorePages || state.hasError ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == state.dealCount)
-                    return Center(child: CircularProgressIndicator());
+                  if (index == state.dealCount) {
+                    if (state.hasError)
+                      return Row(
+                        children: [
+                          TextButton(
+                              onPressed: () =>
+                                  bloc.add(RetryLoadingButtonEvent()),
+                              child: Icon(Icons.replay)),
+                          Text('Something went wrong loading the deals'),
+                        ],
+                      );
+                    else
+                      return Center(child: CircularProgressIndicator());
+                  }
                   bloc.add(RenderItemEvent(index));
                   return _buildGridItem(context, state.deals![index]);
                 });
           else if (state.deals != null)
-            return Center(child: Text('Nothing here'));
+            return CenteredMessage(
+              message: 'Nothing here...',
+              secondaryMessage: 'Except for you and me :)',
+            );
           else
             return Center(child: CircularProgressIndicator());
         },

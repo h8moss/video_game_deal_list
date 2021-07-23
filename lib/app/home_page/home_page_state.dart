@@ -5,20 +5,24 @@ class HomePageState {
   HomePageState({
     this.deals,
     this.filter: const FilterModel(),
+    this.hasError: false,
   });
 
   final List<DealModel>? deals;
   final FilterModel filter;
+  final bool hasError;
 
   HomePageState updateWith({
     List<DealModel>? deals = const [_MarkedDealModel()],
     FilterModel? filter,
+    bool? hasError,
   }) {
     bool dealsDefault =
         deals != null && deals.length == 1 && deals[0] is _MarkedDealModel;
     return HomePageState(
       deals: dealsDefault ? this.deals : deals,
       filter: filter ?? this.filter,
+      hasError: hasError ?? this.hasError,
     );
   }
 
