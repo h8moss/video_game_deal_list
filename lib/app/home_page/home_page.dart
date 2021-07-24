@@ -40,52 +40,64 @@ class HomePage extends StatelessWidget {
       ),
       body: BlocBuilder<HomePageBloc, HomePageState>(
         builder: (context, state) {
-          if (state.hasError && state.dealCount == 0) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CenteredMessage(
-                  message: 'Something went wrong.',
-                  secondaryMessage: 'Please try again later',
-                ),
-                TextButton(
-                    onPressed: () => bloc.add(GetInitialPageEvent()),
-                    child: Icon(Icons.replay)),
-              ],
-            );
-          }
+          if (state.hasError && state.dealCount == 0)
+            return _buildErrorMessage(context);
           if (state.dealCount != 0)
-            return ListView.separated(
-                separatorBuilder: (_, __) => Divider(),
-                itemCount: state.dealCount +
-                    (bloc.hasMorePages || state.hasError ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == state.dealCount) {
-                    if (state.hasError)
-                      return Row(
-                        children: [
-                          TextButton(
-                              onPressed: () =>
-                                  bloc.add(RetryLoadingButtonEvent()),
-                              child: Icon(Icons.replay)),
-                          Text('Something went wrong loading the deals'),
-                        ],
-                      );
-                    else
-                      return Center(child: CircularProgressIndicator());
-                  }
-                  bloc.add(RenderItemEvent(index));
-                  return _buildGridItem(context, state.deals![index]);
-                });
+            return _buildListView(context, state);
           else if (state.deals != null)
-            return CenteredMessage(
-              message: 'Nothing here...',
-              secondaryMessage: 'Except for you and me :)',
-            );
+            return _buildEmptyPage();
           else
             return Center(child: CircularProgressIndicator());
         },
       ),
+    );
+  }
+
+  CenteredMessage _buildEmptyPage() {
+    return CenteredMessage(
+      message: 'Nothing here...',
+      secondaryMessage: 'Except for you and me :)',
+    );
+  }
+
+  ListView _buildListView(BuildContext context, HomePageState state) {
+    final bloc = BlocProvider.of<HomePageBloc>(context);
+    return ListView.separated(
+        separatorBuilder: (_, __) => Divider(),
+        itemCount:
+            state.dealCount + (bloc.hasMorePages || state.hasError ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == state.dealCount) {
+            if (state.hasError)
+              return Row(
+                children: [
+                  TextButton(
+                      onPressed: () => bloc.add(RetryLoadingButtonEvent()),
+                      child: Icon(Icons.replay)),
+                  Text('Something went wrong loading the deals'),
+                ],
+              );
+            else
+              return Center(child: CircularProgressIndicator());
+          }
+          bloc.add(RenderItemEvent(index));
+          return _buildGridItem(context, state.deals![index]);
+        });
+  }
+
+  Column _buildErrorMessage(BuildContext context) {
+    final bloc = BlocProvider.of<HomePageBloc>(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        CenteredMessage(
+          message: 'Something went wrong.',
+          secondaryMessage: 'Please try again later',
+        ),
+        TextButton(
+            onPressed: () => bloc.add(GetInitialPageEvent()),
+            child: Icon(Icons.replay)),
+      ],
     );
   }
 
