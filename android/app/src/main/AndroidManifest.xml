@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.video_game_wish_list">
    <application
-        android:label="video_game_wish_list"
+        android:label="video game deal viewer"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
