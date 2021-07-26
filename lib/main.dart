@@ -4,9 +4,7 @@ import 'package:provider/provider.dart';
 import 'app/home_page/home_page_builder.dart';
 import 'common/services/game_server.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
