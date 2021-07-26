@@ -6,24 +6,31 @@ class HomePageState {
     this.deals,
     this.filter: const FilterModel(),
     this.hasError: false,
+    this.isSearching: false,
+    this.searchTerm: '',
   });
 
   final List<DealModel>? deals;
   final FilterModel filter;
   final bool hasError;
+  final String searchTerm;
+  final bool isSearching;
 
   HomePageState updateWith({
     List<DealModel>? deals = const [_MarkedDealModel()],
     FilterModel? filter,
     bool? hasError,
+    String? searchTerm,
+    bool? isSearching,
   }) {
     bool dealsDefault =
         deals != null && deals.length == 1 && deals[0] is _MarkedDealModel;
     return HomePageState(
-      deals: dealsDefault ? this.deals : deals,
-      filter: filter ?? this.filter,
-      hasError: hasError ?? this.hasError,
-    );
+        deals: dealsDefault ? this.deals : deals,
+        filter: filter ?? this.filter,
+        hasError: hasError ?? this.hasError,
+        isSearching: isSearching ?? this.isSearching,
+        searchTerm: searchTerm ?? this.searchTerm);
   }
 
   int get dealCount => deals?.length ?? 0;

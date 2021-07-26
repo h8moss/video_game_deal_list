@@ -11,8 +11,8 @@ import 'package:video_game_wish_list/common/widgets/centered_message.dart';
 
 import 'home_page_state.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage._({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage._({Key? key}) : super(key: key);
 
   static Widget create(BuildContext context) {
     final gameServer = Provider.of<GameServer>(context, listen: false);
@@ -23,44 +23,81 @@ class HomePage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
     final bloc = BlocProvider.of<HomePageBloc>(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Discover deals'),
-        actions: [
-          TextButton(
-            onPressed: () => bloc.add(FilterButtonPressedEvent(context)),
-            child: Icon(
-              Icons.filter_list,
-              color: Colors.black,
-            ),
-          )
-        ],
-      ),
-      body: BlocBuilder<HomePageBloc, HomePageState>(
-        builder: (context, state) {
-          if (state.hasError && state.dealCount == 0)
-            return _buildErrorMessage(context);
-          if (state.dealCount != 0)
-            return _buildListView(context, state);
-          else if (state.deals != null)
-            return _buildEmptyPage();
-          else
-            return Center(child: CircularProgressIndicator());
-        },
-      ),
+    _searchController.dispose();
+    bloc.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<HomePageBloc, HomePageState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: _buildAppBar(state),
+          body: _buildScaffoldBody(state),
+        );
+      },
     );
   }
 
-  CenteredMessage _buildEmptyPage() {
+  AppBar _buildAppBar(HomePageState state) {
+    final bloc = BlocProvider.of<HomePageBloc>(context);
+    bool isSearching = state.isSearching;
+    return AppBar(
+      title: isSearching
+          ? TextField(
+              onSubmitted: (val) => bloc.add(SetSearchTermEvent(val)),
+              autofocus: true,
+              controller: _searchController,
+            )
+          : Text('Discover deals'),
+      actions: [
+        TextButton(
+          onPressed: () => bloc.add(FilterButtonPressedEvent(context)),
+          child: Icon(
+            Icons.filter_list,
+            color: Colors.black,
+          ),
+        ),
+        TextButton(
+          child: Icon(
+            Icons.search,
+            color: Colors.black,
+          ),
+          onPressed: () => bloc.add(isSearching
+              ? SetSearchTermEvent(_searchController.text)
+              : SetIsSearchingEvent(true)),
+        )
+      ],
+      centerTitle: true,
+      leading: isSearching
+          ? TextButton(
+              onPressed: () => bloc.add(SetIsSearchingEvent(false)),
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ))
+          : null,
+    );
+  }
+
+  Widget _buildEmptyPage() {
     return CenteredMessage(
       message: 'Nothing here...',
       secondaryMessage: 'Except for you and me :)',
     );
   }
 
-  ListView _buildListView(BuildContext context, HomePageState state) {
+  Widget _buildListView(HomePageState state) {
     final bloc = BlocProvider.of<HomePageBloc>(context);
     return ListView.separated(
         separatorBuilder: (_, __) => Divider(),
@@ -81,11 +118,11 @@ class HomePage extends StatelessWidget {
               return Center(child: CircularProgressIndicator());
           }
           bloc.add(RenderItemEvent(index));
-          return _buildGridItem(context, state.deals![index]);
+          return _buildGridItem(state.deals![index]);
         });
   }
 
-  Column _buildErrorMessage(BuildContext context) {
+  Widget _buildErrorMessage() {
     final bloc = BlocProvider.of<HomePageBloc>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -101,12 +138,22 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildGridItem(BuildContext context, DealModel model) {
+  Widget _buildGridItem(DealModel model) {
     return Center(
       child: DealTile(
         onPressed: () => DealPageBuilder.show(context, model.id),
         saleModel: model,
       ),
     );
+  }
+
+  Widget _buildScaffoldBody(HomePageState state) {
+    if (state.hasError && state.dealCount == 0) return _buildErrorMessage();
+    if (state.dealCount != 0)
+      return _buildListView(state);
+    else if (state.deals != null)
+      return _buildEmptyPage();
+    else
+      return Center(child: CircularProgressIndicator());
   }
 }

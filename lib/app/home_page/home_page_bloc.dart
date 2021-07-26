@@ -38,6 +38,10 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       yield* _setHasError(event);
     else if (event is RetryLoadingButtonEvent)
       yield* _retryLoadingButton(event);
+    else if (event is SetIsSearchingEvent)
+      yield* _setIsSearching(event);
+    else if (event is SetSearchTermEvent)
+      yield* _setSearchTerm(event);
     else
       throw UnimplementedError();
   }
@@ -109,12 +113,22 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     yield state.updateWith(hasError: event.value);
   }
 
+  Stream<HomePageState> _setIsSearching(SetIsSearchingEvent event) async* {
+    yield state.updateWith(isSearching: event.value);
+    if (!event.value) add(SetSearchTermEvent(''));
+  }
+
+  Stream<HomePageState> _setSearchTerm(SetSearchTermEvent event) async* {
+    yield state.updateWith(searchTerm: event.value);
+    add(GetInitialPageEvent());
+  }
+
   Future<DealResults?> _fetchGames([int? page]) async {
     if (page == null) page = _currentPage;
     add(SetHasErrorEvent(false));
     DealResults? games;
     try {
-      games = await server.fetchGames(page, state.filter);
+      games = await server.fetchGames(page, state.filter, state.searchTerm);
     } catch (e) {
       addError(e);
       return null;

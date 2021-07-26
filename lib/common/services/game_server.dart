@@ -19,8 +19,11 @@ class GameServer {
 
   /// asynchronously fetch the games from the cheap shark api from the specified
   /// [page] using the specified [filter] and with the specified [search]
-  Future<DealResults> fetchGames(int page, FilterModel filter,
-      [String search = '']) async {
+  Future<DealResults> fetchGames(
+    int page,
+    FilterModel filter,
+    String search,
+  ) async {
     String query = _getQuery(page, filter, search);
     final response = await _dio.get('$dealsUrl$query');
     if (response.statusCode == 200) {
@@ -83,6 +86,7 @@ class GameServer {
     if (page == 0 && filter.isDefault && search.isEmpty) return '';
     var result = '?';
     if (page != 0) result += 'pageNumber=$page&';
+    if (search.isNotEmpty) result += 'title=$search&';
     if (!filter.isDescending) result += 'desc=1&';
     if (filter.useLowerPrice) result += 'lowerPrice=${filter.lowerPrice}&';
     if (filter.useMetacriticScore)

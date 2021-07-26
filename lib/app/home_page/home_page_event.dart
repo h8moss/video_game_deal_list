@@ -45,3 +45,15 @@ class SetHasErrorEvent extends HomePageEvent {
 }
 
 class RetryLoadingButtonEvent extends HomePageEvent {}
+
+class SetIsSearchingEvent extends HomePageEvent {
+  SetIsSearchingEvent(this.value);
+
+  final bool value;
+}
+
+class SetSearchTermEvent extends HomePageEvent {
+  SetSearchTermEvent(this.value);
+
+  final String value;
+}
