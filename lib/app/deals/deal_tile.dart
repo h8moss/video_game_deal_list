@@ -19,11 +19,12 @@ class DealTile extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Image.network(
-                    saleModel.thumbnailUrl,
-                  )),
+                height: 100,
+                width: 100,
+                child: Image.network(saleModel.thumbnailUrl,
+                    errorBuilder: (context, exception, stacktrace) =>
+                        Text('Error loading image...')),
+              ),
             ),
             Flexible(
               child: Column(
