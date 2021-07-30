@@ -1,12 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
-import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/services/api_deal_server.dart';
 
 import 'filter_sheet_event.dart';
 import 'models/filter_sheet_state.dart';
 
 class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
-  FilterSheetBloc(FilterSheetState initialState, GameServer server)
+  FilterSheetBloc(FilterSheetState initialState, ApiDealServer server)
       : super(initialState) {
     server.getAllStores().then((value) {
       add(SetAllStores(value));

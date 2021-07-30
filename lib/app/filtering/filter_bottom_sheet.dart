@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_bloc.dart';
 import 'package:video_game_wish_list/app/filtering/models/filter_sheet_state.dart';
-import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/services/api_deal_server.dart';
 import 'package:video_game_wish_list/common/widgets/store_display.dart';
 import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
 import 'package:video_game_wish_list/common/models/store_model.dart';
@@ -21,7 +21,7 @@ class FilterBottomSheet extends StatelessWidget {
 
   static Future<FilterModel?> show(
       BuildContext context, FilterModel model) async {
-    final server = Provider.of<GameServer>(context, listen: false);
+    final server = Provider.of<ApiDealServer>(context, listen: false);
     final FilterModel? resultModel = await showModalBottomSheet(
       context: context,
       builder: (_) => BlocProvider<FilterSheetBloc>(

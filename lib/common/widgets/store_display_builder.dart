@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/services/api_deal_server.dart';
 import 'package:video_game_wish_list/common/widgets/store_display.dart';
 import 'package:video_game_wish_list/common/models/store_model.dart';
 
@@ -20,7 +20,7 @@ class StoreDisplayBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GameServer server = Provider.of<GameServer>(context);
+    ApiDealServer server = Provider.of<ApiDealServer>(context, listen: false);
     Stream<StoreModel?> store = server.getStore(storeID);
     return StreamBuilder<StoreModel?>(
       stream: store,

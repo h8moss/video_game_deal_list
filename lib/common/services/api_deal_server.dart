@@ -7,9 +7,11 @@ import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
 import 'package:video_game_wish_list/common/models/store_model.dart';
 
+import 'deal_server.dart';
+
 /// API to connext to cheapshark and fetch deals.
-class GameServer {
-  GameServer();
+class ApiDealServer extends DealServer {
+  ApiDealServer();
 
   Dio _dio = Dio();
   static String _domain = 'https://www.cheapshark.com/api/1.0';
@@ -17,9 +19,8 @@ class GameServer {
   static String get dealsUrl => '$_domain/deals';
   static String get storesUrl => '$_domain/stores';
 
-  /// asynchronously fetch the games from the cheap shark api from the specified
-  /// [page] using the specified [filter] and with the specified [search]
-  Future<DealResults> fetchGames(
+  @override
+  Future<DealResults> fetchDeals(
     int page,
     FilterModel filter,
     String search,
@@ -133,4 +134,10 @@ class GameServer {
         return 'recent';
     }
   }
+
+  @override
+  final bool hasFilter = true;
+
+  @override
+  final bool hasSearch = true;
 }
