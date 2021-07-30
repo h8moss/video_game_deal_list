@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:video_game_wish_list/app/deals/deal_page_builder.dart';
-import 'package:video_game_wish_list/app/deals/deal_tile.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_bloc.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_event.dart';
-import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
-import 'package:video_game_wish_list/common/services/game_server.dart';
-import 'package:video_game_wish_list/common/widgets/centered_message.dart';
+import 'package:video_game_wish_list/common/services/api_deal_server.dart';
+import 'package:video_game_wish_list/common/services/saved_deal_server.dart';
 
+import 'home_page_app_bar.dart';
+import 'home_page_deal_list_view.dart';
 import 'home_page_state.dart';
 
 class HomePage extends StatefulWidget {
   HomePage._({Key? key}) : super(key: key);
 
-  static Widget create(BuildContext context) {
-    final gameServer = Provider.of<GameServer>(context, listen: false);
+  static Widget create(
+    BuildContext context,
+  ) {
+    final savedServer = Provider.of<SavedDealServer>(context, listen: false);
+    final apiServer = Provider.of<ApiDealServer>(context, listen: false);
+
     return BlocProvider<HomePageBloc>(
-      create: (context) => HomePageBloc(HomePageState(), server: gameServer),
+      create: (context) =>
+          HomePageBloc(HomePageState(), servers: [savedServer, apiServer]),
       child: HomePage._(),
     );
   }
@@ -27,13 +31,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController _searchController = TextEditingController();
+  HomePageBloc get bloc => BlocProvider.of<HomePageBloc>(context);
+
+  TextEditingController _searchFieldController = TextEditingController();
 
   @override
   void dispose() {
-    final bloc = BlocProvider.of<HomePageBloc>(context);
-    _searchController.dispose();
     bloc.close();
+    _searchFieldController.dispose();
     super.dispose();
   }
 
@@ -42,118 +47,40 @@ class _HomePageState extends State<HomePage> {
     return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: _buildAppBar(state),
-          body: _buildScaffoldBody(state),
+          appBar: HomePageAppBar(
+            hasFilter: bloc.selectedServer.hasFilter,
+            hasSearch: bloc.selectedServer.hasSearch,
+            isSearching: state.isSearching,
+            label:
+                bloc.serverIndex == 0 ? 'Bookmarked deals' : 'Discover deals',
+            onBackPressed: () => bloc.add(SetIsSearchingEvent(false)),
+            onFilterPressed: () => bloc.add(FilterButtonPressedEvent(context)),
+            onSearchPressed: () => bloc.add(state.isSearching
+                ? SetSearchTermEvent(_searchFieldController.text)
+                : SetIsSearchingEvent(true)),
+            onSearchSubmit: (String value) => SetSearchTermEvent(value),
+            searchFieldController: _searchFieldController,
+          ),
+          body: HomePageDealListView(
+            deals: state.deals,
+            isDone: !bloc.hasMorePages,
+            onRenderCell: (int value) => bloc.add(RenderItemEvent(value)),
+            hasError: state.hasError,
+            onRetryAppending: () => bloc.add(RetryLoadingButtonEvent()),
+            onRetryLoading: () => bloc.add(GetInitialPageEvent()),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.library_books), label: 'Saved deals'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.explore), label: 'Discover'),
+            ],
+            currentIndex: bloc.serverIndex,
+            onTap: (i) => bloc.add(SetBottomNavigationEvent(i)),
+          ),
         );
       },
     );
-  }
-
-  AppBar _buildAppBar(HomePageState state) {
-    final bloc = BlocProvider.of<HomePageBloc>(context);
-    bool isSearching = state.isSearching;
-    return AppBar(
-      title: isSearching
-          ? TextField(
-              onSubmitted: (val) => bloc.add(SetSearchTermEvent(val)),
-              autofocus: true,
-              controller: _searchController,
-            )
-          : Text('Discover deals'),
-      actions: [
-        TextButton(
-          onPressed: () => bloc.add(FilterButtonPressedEvent(context)),
-          child: Icon(
-            Icons.filter_list,
-            color: Colors.black,
-          ),
-        ),
-        TextButton(
-          child: Icon(
-            Icons.search,
-            color: Colors.black,
-          ),
-          onPressed: () => bloc.add(isSearching
-              ? SetSearchTermEvent(_searchController.text)
-              : SetIsSearchingEvent(true)),
-        )
-      ],
-      centerTitle: true,
-      leading: isSearching
-          ? TextButton(
-              onPressed: () => bloc.add(SetIsSearchingEvent(false)),
-              child: Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-              ))
-          : null,
-    );
-  }
-
-  Widget _buildEmptyPage() {
-    return CenteredMessage(
-      message: 'Nothing here...',
-      secondaryMessage: 'Except for you and me :)',
-    );
-  }
-
-  Widget _buildListView(HomePageState state) {
-    final bloc = BlocProvider.of<HomePageBloc>(context);
-    return ListView.separated(
-        separatorBuilder: (_, __) => Divider(),
-        itemCount:
-            state.dealCount + (bloc.hasMorePages || state.hasError ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == state.dealCount) {
-            if (state.hasError)
-              return Row(
-                children: [
-                  TextButton(
-                      onPressed: () => bloc.add(RetryLoadingButtonEvent()),
-                      child: Icon(Icons.replay)),
-                  Text('Something went wrong loading the deals'),
-                ],
-              );
-            else
-              return Center(child: CircularProgressIndicator());
-          }
-          bloc.add(RenderItemEvent(index));
-          return _buildGridItem(state.deals![index]);
-        });
-  }
-
-  Widget _buildErrorMessage() {
-    final bloc = BlocProvider.of<HomePageBloc>(context);
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CenteredMessage(
-          message: 'Something went wrong.',
-          secondaryMessage: 'Please try again later',
-        ),
-        TextButton(
-            onPressed: () => bloc.add(GetInitialPageEvent()),
-            child: Icon(Icons.replay)),
-      ],
-    );
-  }
-
-  Widget _buildGridItem(DealModel model) {
-    return Center(
-      child: DealTile(
-        onPressed: () => DealPageBuilder.show(context, model.id),
-        saleModel: model,
-      ),
-    );
-  }
-
-  Widget _buildScaffoldBody(HomePageState state) {
-    if (state.hasError && state.dealCount == 0) return _buildErrorMessage();
-    if (state.dealCount != 0)
-      return _buildListView(state);
-    else if (state.deals != null)
-      return _buildEmptyPage();
-    else
-      return Center(child: CircularProgressIndicator());
   }
 }

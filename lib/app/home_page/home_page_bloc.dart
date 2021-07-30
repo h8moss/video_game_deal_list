@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_results.dart';
 import 'package:video_game_wish_list/app/filtering/filter_bottom_sheet.dart';
-import 'package:video_game_wish_list/common/services/game_server.dart';
+import 'package:video_game_wish_list/common/services/deal_server.dart';
 
 import 'home_page_event.dart';
 import 'home_page_state.dart';
@@ -9,16 +9,21 @@ import 'home_page_state.dart';
 class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   HomePageBloc(
     HomePageState initialState, {
-    required this.server,
+    required this.servers,
   }) : super(initialState) {
     add(GetInitialPageEvent());
   }
 
-  final GameServer server;
+  final List<DealServer> servers;
+
+  int serverIndex = 0;
+
   int _currentPage = 0;
   int _totalPages = 1;
 
   bool get hasMorePages => _currentPage < _totalPages - 1;
+
+  DealServer get selectedServer => servers[serverIndex];
 
   @override
   Stream<HomePageState> mapEventToState(HomePageEvent event) async* {
@@ -42,6 +47,8 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       yield* _setIsSearching(event);
     else if (event is SetSearchTermEvent)
       yield* _setSearchTerm(event);
+    else if (event is SetBottomNavigationEvent)
+      yield* _setBottomNavigation(event);
     else
       throw UnimplementedError();
   }
@@ -69,7 +76,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   Stream<HomePageState> _getInitialPage(GetInitialPageEvent event) async* {
     _currentPage = 0;
-    final deals = await _fetchGames();
+    final deals = await _fetchDeals();
     if (deals != null) {
       _totalPages = deals.totalPages;
       add(SetDealsEvent(deals.results));
@@ -81,7 +88,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     print(event.index);
     if (event.index > threshold && hasMorePages) {
       _currentPage++;
-      final deals = await _fetchGames();
+      final deals = await _fetchDeals();
       if (deals != null) {
         _totalPages = deals.totalPages;
         add(AppendDealsEvent(deals.results));
@@ -91,7 +98,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
 
   Stream<HomePageState> _retryLoadingButton(
       RetryLoadingButtonEvent event) async* {
-    final deals = await _fetchGames(_currentPage - 1);
+    final deals = await _fetchDeals(_currentPage - 1);
     if (deals != null) {
       _totalPages = deals.totalPages;
       _currentPage++;
@@ -123,12 +130,22 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     add(GetInitialPageEvent());
   }
 
-  Future<DealResults?> _fetchGames([int? page]) async {
+  Stream<HomePageState> _setBottomNavigation(
+      SetBottomNavigationEvent event) async* {
+    if (event.value < servers.length) {
+      serverIndex = event.value;
+      add(SetDealsEvent(null));
+      add(GetInitialPageEvent());
+    }
+  }
+
+  Future<DealResults?> _fetchDeals([int? page]) async {
     if (page == null) page = _currentPage;
     add(SetHasErrorEvent(false));
     DealResults? games;
     try {
-      games = await server.fetchGames(page, state.filter, state.searchTerm);
+      games =
+          await selectedServer.fetchDeals(page, state.filter, state.searchTerm);
     } catch (e) {
       addError(e);
       return null;

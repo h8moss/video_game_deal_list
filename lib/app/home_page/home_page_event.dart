@@ -57,3 +57,9 @@ class SetSearchTermEvent extends HomePageEvent {
 
   final String value;
 }
+
+class SetBottomNavigationEvent extends HomePageEvent {
+  SetBottomNavigationEvent(this.value);
+
+  final int value;
+}
