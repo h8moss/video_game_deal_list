@@ -131,7 +131,7 @@ class ApiDealServer extends DealServer {
       case DealSortingStyle.Store:
         return 'Store';
       case DealSortingStyle.Recent:
-        return 'recent';
+        return 'Recent';
     }
   }
 
