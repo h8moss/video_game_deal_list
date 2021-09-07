@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/app/filtering/filter_sheet_bloc.dart';
 import 'package:video_game_wish_list/app/filtering/models/filter_sheet_state.dart';
+import 'package:video_game_wish_list/common/other/enum_to_string.dart';
 import 'package:video_game_wish_list/common/services/api_deal_server.dart';
 import 'package:video_game_wish_list/common/widgets/store_display.dart';
 import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
@@ -72,7 +73,7 @@ class FilterBottomSheet extends StatelessWidget {
                     for (var item in FilterSheetSections.values)
                       ExpansionPanel(
                         headerBuilder: (_, b) => Text(
-                            bloc.filterSheetSectionsNames(item),
+                            EnumToString.enumToCamelCaseString(item.toString()),
                             style: TextStyle(fontSize: 19)),
                         body: _getSectionBuilder(item)(context, state),
                         isExpanded: state.getSectionExpansion(item),
@@ -279,7 +280,7 @@ class FilterBottomSheet extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(bloc.dealSortingNames(sort)),
+              Text(EnumToString.enumToCamelCaseString(sort.toString())),
               SizedBox(
                 width: 20,
                 child: icon,

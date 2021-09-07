@@ -6,6 +6,7 @@ import 'package:video_game_wish_list/app/deals/models/deal_results.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
 import 'package:video_game_wish_list/common/models/store_model.dart';
+import 'package:video_game_wish_list/common/other/enum_to_string.dart';
 
 import 'deal_server.dart';
 
@@ -92,14 +93,14 @@ class ApiDealServer extends DealServer {
     if (filter.useLowerPrice) result += 'lowerPrice=${filter.lowerPrice}&';
     if (filter.useMetacriticScore)
       result += 'metacritic=${filter.metacriticScore}&';
-    if (filter.sorting != DealSortingStyle.Rating)
-      result += 'sortBy=${_getSortTitle(filter.sorting)}&';
+    if (filter.sorting != DealSortingStyle.DealRating)
+      result +=
+          'sortBy=${EnumToString.enumToString(filter.sorting.toString())}&';
     if (filter.useSteamScore) result += 'steamRating=${filter.steamScore}&';
     if (filter.stores.length != 0) {
       var storeText = filter.stores
           .fold('', (previousValue, element) => '$previousValue${element.id},');
       storeText = storeText.substring(0, storeText.length - 1);
-
       result += 'storeID=$storeText&';
     }
     if (filter.useUpperPrice) result += 'upperPrice=${filter.upperPrice}&';
@@ -110,29 +111,6 @@ class ApiDealServer extends DealServer {
     print(result.substring(0, result.length - 1));
 
     return result.substring(0, result.length - 1);
-  }
-
-  String _getSortTitle(DealSortingStyle sorting) {
-    switch (sorting) {
-      case DealSortingStyle.Metacritic:
-        return 'Metacritic';
-      case DealSortingStyle.Price:
-        return 'Price';
-      case DealSortingStyle.Rating:
-        return 'DealRating';
-      case DealSortingStyle.Title:
-        return 'Title';
-      case DealSortingStyle.Savings:
-        return 'Savings';
-      case DealSortingStyle.Reviews:
-        return 'Reviews';
-      case DealSortingStyle.Release:
-        return 'Release';
-      case DealSortingStyle.Store:
-        return 'Store';
-      case DealSortingStyle.Recent:
-        return 'Recent';
-    }
   }
 
   @override

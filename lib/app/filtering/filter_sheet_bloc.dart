@@ -87,42 +87,4 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
   Stream<FilterSheetState> _updateWithModel(UpdateWithModel event) async* {
     yield state.updateWith(filterModel: event.model);
   }
-
-  String filterSheetSectionsNames(FilterSheetSections section) {
-    switch (section) {
-      case FilterSheetSections.PriceRange:
-        return 'Price range';
-      case FilterSheetSections.Rating:
-        return 'Rating';
-      case FilterSheetSections.Sorting:
-        return 'Sorting';
-      case FilterSheetSections.Stores:
-        return 'Stores';
-      case FilterSheetSections.Other:
-        return 'Other';
-    }
-  }
-
-  String dealSortingNames(DealSortingStyle sorting) {
-    switch (sorting) {
-      case DealSortingStyle.Rating:
-        return 'Deal rating';
-      case DealSortingStyle.Title:
-        return 'Title';
-      case DealSortingStyle.Savings:
-        return 'Savings';
-      case DealSortingStyle.Price:
-        return 'Price';
-      case DealSortingStyle.Metacritic:
-        return 'Metacritic score';
-      case DealSortingStyle.Reviews:
-        return 'Reviews';
-      case DealSortingStyle.Release:
-        return 'Release date';
-      case DealSortingStyle.Store:
-        return 'Store';
-      case DealSortingStyle.Recent:
-        return 'Recent';
-    }
-  }
 }

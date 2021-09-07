@@ -1,5 +1,5 @@
 enum DealSortingStyle {
-  Rating, // default
+  DealRating, // default
   Title,
   Savings,
   Price,

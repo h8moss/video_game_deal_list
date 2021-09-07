@@ -7,7 +7,7 @@ class FilterModel extends Equatable {
     this.upperPrice: 49,
     this.lowerPrice: 0,
     this.stores: const [],
-    this.sorting: DealSortingStyle.Rating,
+    this.sorting: DealSortingStyle.DealRating,
     this.isDescending: true,
     this.metacriticScore: 0,
     this.steamScore: 0,
