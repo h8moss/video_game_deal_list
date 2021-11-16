@@ -8,4 +8,8 @@ abstract class DealServer {
 
   abstract final bool hasSearch;
   abstract final bool hasFilter;
+
+  Future<void> initialize() async {}
+
+  void dispose() {}
 }

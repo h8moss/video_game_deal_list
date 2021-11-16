@@ -143,6 +143,7 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     if (page == null) page = _currentPage;
     add(SetHasErrorEvent(false));
     DealResults? games;
+    await selectedServer.initialize();
     try {
       games =
           await selectedServer.fetchDeals(page, state.filter, state.searchTerm);
@@ -151,5 +152,14 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
       return null;
     }
     return games;
+  }
+
+  @override
+  Future<void> close() async {
+    for (var server in servers) {
+      server.dispose();
+    }
+
+    super.close();
   }
 }

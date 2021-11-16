@@ -28,8 +28,8 @@ class LabeledSlider extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             labelText,
-            style:
-                TextStyle(color: Theme.of(context).accentColor, fontSize: 20),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary, fontSize: 20),
           ),
         ),
         Expanded(

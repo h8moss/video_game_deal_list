@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_bloc.dart';
 import 'package:video_game_wish_list/app/home_page/home_page_event.dart';
 import 'package:video_game_wish_list/common/services/api_deal_server.dart';
-import 'package:video_game_wish_list/common/services/saved_deal_server.dart';
+import 'package:video_game_wish_list/common/services/preferences_deal_server.dart';
 
 import 'home_page_app_bar.dart';
 import 'home_page_deal_list_view.dart';
@@ -16,7 +16,8 @@ class HomePage extends StatefulWidget {
   static Widget create(
     BuildContext context,
   ) {
-    final savedServer = Provider.of<SavedDealServer>(context, listen: false);
+    final savedServer =
+        Provider.of<PreferencesDealServer>(context, listen: false);
     final apiServer = Provider.of<ApiDealServer>(context, listen: false);
 
     return BlocProvider<HomePageBloc>(

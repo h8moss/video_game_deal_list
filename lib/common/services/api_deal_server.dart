@@ -118,4 +118,10 @@ class ApiDealServer extends DealServer {
 
   @override
   final bool hasSearch = true;
+
+  @override
+  void dispose() {
+    _dio.close();
+    super.dispose();
+  }
 }

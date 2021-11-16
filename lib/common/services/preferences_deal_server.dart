@@ -1,24 +1,31 @@
-import 'package:localstorage/localstorage.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
 import 'package:video_game_wish_list/app/filtering/models/filter_model.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_results.dart';
 import 'package:video_game_wish_list/common/services/api_deal_server.dart';
 import 'package:video_game_wish_list/common/services/deal_server.dart';
 
-@Deprecated('use PreferencesDealServer instead')
-class SavedDealServer extends DealServer {
-  SavedDealServer(this.apiDealServer);
+class PreferencesDealServer extends DealServer {
+  PreferencesDealServer(this.apiDealServer);
 
-  final LocalStorage storage = LocalStorage('saved_deals');
   final String _dealsKey = 'deals';
   final ApiDealServer apiDealServer;
 
   BehaviorSubject<List<String>> _dealsSubject = BehaviorSubject.seeded([]);
+  bool _isInitialized = false;
 
   @override
   void dispose() {
     _dealsSubject.close();
+    _isInitialized = false;
+    super.dispose();
+  }
+
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+    await _readData();
+    _isInitialized = true;
   }
 
   @override
@@ -27,14 +34,10 @@ class SavedDealServer extends DealServer {
     FilterModel filter,
     String search,
   ) async {
+    _assertInitialization();
     var currentDealIds = await deals.first;
     var currentDeals = await Future.wait(
         currentDealIds.map((e) async => await apiDealServer.getDeal(e).last));
-    //List<DealModel> finalDeals = []
-    //for (int i=page*60; i<(page+1)*60; i++) {
-    //  if (i >= deals.length) break;
-    //  if (deals[i]!=null && deals[i]!.gameName.contains(search)) finalDeals.add(deals[i]!);
-    //}
     return DealResults(
         currentResults: 60,
         page: page,
@@ -49,34 +52,46 @@ class SavedDealServer extends DealServer {
   }
 
   Future<void> addDeal(DealModel model) async {
+    _assertInitialization();
     var currentDeals = await deals.first;
     _setData(currentDeals..add(model.id));
   }
 
   Future<void> removeDeal(DealModel model) async {
+    _assertInitialization();
     var currentDeals = await deals.first;
     _setData(currentDeals..remove(model.id));
   }
 
   Future<bool> isStored(DealModel model) async {
+    _assertInitialization();
     var currentDeals = await deals.first;
     return currentDeals.contains(model.id);
   }
 
   Future<void> _setData(List<String> value) async {
-    await storage.ready;
+    final prefs = await SharedPreferences.getInstance();
     _dealsSubject.value = value;
-    storage.setItem(_dealsKey, value);
+    prefs.setStringList(_dealsKey, value);
+  }
+
+  Future<void> _readData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? values = prefs.getStringList(_dealsKey);
+    if (values != null && values.isNotEmpty) {
+      _dealsSubject.add(values);
+    }
   }
 
   Stream<List<String>> get deals => _dealsSubject.stream;
+
+  void _assertInitialization() {
+    if (!_isInitialized) throw 'server not initialized';
+  }
 
   @override
   final bool hasFilter = false;
 
   @override
   final bool hasSearch = true;
-
-  @override
-  Future<void> initialize() async {} // needs no initialization
 }
