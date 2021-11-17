@@ -3,8 +3,8 @@ import 'dart:math';
 extension toString on double {
   /// Returns the double as a string with [n] or less decimal places
   ///
+  /// for example
   /// ```dart
-  /// import 'double_extension.dart';
   /// 0.999999999.toStringAsDynamic(2); // '0.99'
   ///
   /// 4.23.toStringAsDynamic(7); // '4.23'

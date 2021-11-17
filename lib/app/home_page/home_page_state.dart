@@ -12,6 +12,8 @@ class HomePageState {
 
   final List<DealModel>? deals;
   final FilterModel filter;
+
+  /// true if a connection to an API fails
   final bool hasError;
   final String searchTerm;
   final bool isSearching;

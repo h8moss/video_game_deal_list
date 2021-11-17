@@ -43,7 +43,7 @@ class ApiDealServer extends DealServer {
         'Could not connect to the cheap shark API: status code: ${response.statusCode}');
   }
 
-  /// Asynchronously returns a List of all stores as store models.
+  /// Returns a List of all stores as store models.
   Future<List<StoreModel>> getAllStores() async {
     final response = await _dio.get(storesUrl);
     if (response.statusCode == 200) {

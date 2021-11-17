@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_sorting_Style.dart';
 import 'package:video_game_wish_list/common/models/store_model.dart';
 
+/// Information about a search filter
 class FilterModel extends Equatable {
   const FilterModel({
     this.upperPrice: 49,
@@ -54,21 +55,46 @@ class FilterModel extends Equatable {
     );
   }
 
+  /// maximum price of the deal, not of the game
   final int upperPrice;
+
+  /// minimum price of the deal, not of the game
   final int lowerPrice;
+
+  /// Accepted stores to search for
   final List<StoreModel> stores;
+
+  /// Sort order
   final DealSortingStyle sorting;
+
+  /// Weather the sort should be descending
   final bool isDescending;
+
+  /// minimum score for a game on metacritic
   final int metacriticScore;
+
+  /// minimum score for a game on steam
   final int steamScore;
 
+  /// weather to ignore upperPrice
   final bool useUpperPrice;
+
+  /// weather to ignore lowerPrice
   final bool useLowerPrice;
+
+  /// weather to ignore metacritic score
   final bool useMetacriticScore;
+
+  /// weather to ignore steamScore
   final bool useSteamScore;
 
+  /// Weather to only display AAA games
   final bool isAAA;
+
+  /// Weather to only display steam-redeemable games
   final bool steamWorks;
+
+  /// Weather the deal is still active
   final bool isActive;
 
   bool get isDefault => FilterModel() == this;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_game_wish_list/common/widgets/price_tag.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
 
+/// Display for a deal in a list
 class DealTile extends StatelessWidget {
   DealTile({required this.saleModel, required this.onPressed});
 

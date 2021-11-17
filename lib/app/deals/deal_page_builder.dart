@@ -9,6 +9,7 @@ import 'package:video_game_wish_list/app/deals/deal_page.dart';
 
 import 'models/deal_page_model.dart';
 
+/// Deal page that automatically updates when the deal changes or it's saved.
 class DealPageBuilder extends StatelessWidget {
   const DealPageBuilder({Key? key, required this.dealID}) : super(key: key);
 

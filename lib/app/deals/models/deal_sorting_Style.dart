@@ -1,3 +1,4 @@
+/// The orders to sort in cheapshark
 enum DealSortingStyle {
   DealRating, // default
   Title,

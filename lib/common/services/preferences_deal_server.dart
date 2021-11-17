@@ -6,6 +6,7 @@ import 'package:video_game_wish_list/app/deals/models/deal_results.dart';
 import 'package:video_game_wish_list/common/services/api_deal_server.dart';
 import 'package:video_game_wish_list/common/services/deal_server.dart';
 
+/// Deal server for saved preferences, used to store favorite items
 class PreferencesDealServer extends DealServer {
   PreferencesDealServer(this.apiDealServer);
 
@@ -51,18 +52,21 @@ class PreferencesDealServer extends DealServer {
         totalPages: (currentDeals.length / 60).ceil());
   }
 
+  /// adds a deal [model] to preferences
   Future<void> addDeal(DealModel model) async {
     _assertInitialization();
     var currentDeals = await deals.first;
     _setData(currentDeals..add(model.id));
   }
 
+  /// removes a deal [model] from preferences if present
   Future<void> removeDeal(DealModel model) async {
     _assertInitialization();
     var currentDeals = await deals.first;
     _setData(currentDeals..remove(model.id));
   }
 
+  /// returns true if [model] is stored in the preferences
   Future<bool> isStored(DealModel model) async {
     _assertInitialization();
     var currentDeals = await deals.first;
@@ -83,6 +87,7 @@ class PreferencesDealServer extends DealServer {
     }
   }
 
+  /// Stream of currently saved deals
   Stream<List<String>> get deals => _dealsSubject.stream;
 
   void _assertInitialization() {

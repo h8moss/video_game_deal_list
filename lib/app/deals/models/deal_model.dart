@@ -36,15 +36,36 @@ class DealModel {
     );
   }
 
+  /// Unique deal id
   final String id;
+
+  /// readable name of the game
   final String gameName;
+
+  /// URL to video game image
   final String thumbnailUrl;
+
+  /// current price with deal
   final double price;
+
+  /// original video game price
   final double originalPrice;
+
+  /// store in which deal is
   final int storeId;
+
+  /// sale represented as a number from 0 to 100
   final double percentageOff;
 
+  /// true only if price is 0
   bool get isFree => price == 0;
 
+  /// rounded and formatted percentage value
+  ///
+  /// | actual     | formatted |
+  /// |:-----------|----------:|
+  /// | 99.999999  | 99.99     |
+  /// | 100.00     | 100       |
+  /// | 73.00001   | 73        |
   String get formattedPercentageOff => percentageOff.toStringAsDynamic(2);
 }

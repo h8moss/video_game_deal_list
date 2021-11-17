@@ -4,6 +4,7 @@ import 'package:video_game_wish_list/common/widgets/price_tag.dart';
 import 'package:video_game_wish_list/common/widgets/store_display_builder.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
 
+/// Display for a selected deal
 class DealPage extends StatelessWidget {
   const DealPage({
     Key? key,

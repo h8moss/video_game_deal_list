@@ -14,6 +14,7 @@ import 'filter_sheet_event.dart';
 
 typedef SectionBuilder = Widget Function(BuildContext, FilterSheetState);
 
+/// Bottom sheet for filtering
 class FilterBottomSheet extends StatelessWidget {
   const FilterBottomSheet({Key? key, required this.filterModel})
       : super(key: key);

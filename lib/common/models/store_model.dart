@@ -16,9 +16,17 @@ class StoreModel extends Equatable {
       icon: 'https://www.cheapshark.com${json['images']['logo']}',
     );
   }
+
+  /// Unique numeric ID of the store
   final int id;
+
+  /// name of the store
   final String name;
+
+  /// Weather the store is still active.
   final bool isActive;
+
+  /// Url to icon image of the store
   final String icon;
 
   @override
