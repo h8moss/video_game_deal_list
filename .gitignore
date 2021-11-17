@@ -44,3 +44,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ad related
+lib/common/services/ad_id_provider.dart
+android/app/src/main/AndroidManifest.xml
