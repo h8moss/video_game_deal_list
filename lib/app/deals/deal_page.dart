@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:video_game_wish_list/common/widgets/price_tag.dart';
 import 'package:video_game_wish_list/common/widgets/store_display_builder.dart';
 import 'package:video_game_wish_list/app/deals/models/deal_model.dart';
@@ -71,6 +72,16 @@ class DealPage extends StatelessWidget {
                   storeID: model.storeId,
                   width: 50,
                 )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                    onPressed: () => _launchDeal(context),
+                    child: Text(
+                      'Open deal',
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -87,5 +98,16 @@ class DealPage extends StatelessWidget {
         textAlign: TextAlign.center,
       ),
     );
+  }
+
+  Future<void> _launchDeal(BuildContext context) async {
+    String url = 'https://www.cheapshark.com/redirect?dealID=${model.id}';
+
+    if (await canLaunch(url)) {
+      launch(url);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Something went wrong opening deal')));
+    }
   }
 }
