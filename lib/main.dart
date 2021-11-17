@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
       dispose: (context, value) => value.dispose(),
       child: Provider<PreferencesDealServer>(
         create: (context) => PreferencesDealServer(
-            Provider.of<ApiDealServer>(context, listen: false)),
+          Provider.of<ApiDealServer>(context, listen: false),
+        ),
         dispose: (context, value) => value.dispose(),
         child: MaterialApp(
           title: 'Video Game Deal Viewer',
