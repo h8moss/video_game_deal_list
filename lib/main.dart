@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/common/services/preferences_deal_server.dart';
 
 import 'app/home_page/home_page_builder.dart';
 import 'common/services/api_deal_server.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
