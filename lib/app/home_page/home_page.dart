@@ -59,7 +59,8 @@ class _HomePageState extends State<HomePage> {
             onSearchPressed: () => bloc.add(state.isSearching
                 ? SetSearchTermEvent(_searchFieldController.text)
                 : SetIsSearchingEvent(true)),
-            onSearchSubmit: (String value) => SetSearchTermEvent(value),
+            onSearchSubmit: (String value) =>
+                bloc.add(SetSearchTermEvent(value)),
             searchFieldController: _searchFieldController,
           ),
           body: HomePageDealListView(
