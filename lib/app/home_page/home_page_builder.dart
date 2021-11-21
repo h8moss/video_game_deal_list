@@ -11,5 +11,6 @@ class HomePageBuilder extends StatelessWidget {
     // because we use this context to get the game server,
     // we cant put the provider here
     return HomePage.create(context);
+    // TODO: Change this into using a Builder
   }
 }

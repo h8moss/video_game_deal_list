@@ -41,7 +41,6 @@ class _DealPageState extends State<DealPage> {
   @override
   void dispose() {
     banner.dispose();
-
     super.dispose();
   }
 
