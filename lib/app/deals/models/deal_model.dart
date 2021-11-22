@@ -36,6 +36,12 @@ class DealModel {
     );
   }
 
+  String description() {
+    String priceString = 'only $price\$';
+    if (isFree) priceString = 'free!';
+    return "$gameName is $priceString, that's a $formattedPercentageOff% off";
+  }
+
   /// Unique deal id
   final String id;
 

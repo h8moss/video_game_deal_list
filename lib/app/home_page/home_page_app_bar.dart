@@ -14,10 +14,13 @@ class HomePageAppBar extends AppBar {
     required this.onSearchSubmit,
   }) : super(
           title: isSearching
-              ? TextField(
-                  onSubmitted: onSearchSubmit,
-                  autofocus: true,
-                  controller: searchFieldController,
+              ? Semantics(
+                  label: 'Search field',
+                  child: TextField(
+                    onSubmitted: onSearchSubmit,
+                    autofocus: true,
+                    controller: searchFieldController,
+                  ),
                 )
               : Text(label),
           actions: [
@@ -27,6 +30,7 @@ class HomePageAppBar extends AppBar {
                 child: Icon(
                   Icons.filter_list,
                   color: Colors.black,
+                  semanticLabel: 'Filter',
                 ),
               ),
             if (hasSearch)
@@ -34,6 +38,7 @@ class HomePageAppBar extends AppBar {
                 child: Icon(
                   Icons.search,
                   color: Colors.black,
+                  semanticLabel: 'Search',
                 ),
                 onPressed: onSearchPressed,
               )
@@ -45,6 +50,7 @@ class HomePageAppBar extends AppBar {
                   child: Icon(
                     Icons.arrow_back,
                     color: Colors.black,
+                    semanticLabel: 'Cancel search',
                   ))
               : null,
         );

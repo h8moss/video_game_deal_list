@@ -37,6 +37,8 @@ class FilterBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: add semantics
+
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
     return BlocBuilder<FilterSheetBloc, FilterSheetState>(
       builder: (context, state) => Column(

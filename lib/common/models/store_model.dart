@@ -17,6 +17,8 @@ class StoreModel extends Equatable {
     );
   }
 
+  String describe() => name;
+
   /// Unique numeric ID of the store
   final int id;
 

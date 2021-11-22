@@ -55,6 +55,7 @@ class _DealPageState extends State<DealPage> {
               child: Icon(
                 widget.isFavorite ? Icons.bookmark : Icons.bookmark_outline,
                 color: Colors.black,
+                semanticLabel: widget.isFavorite ? 'Unsave deal' : 'Save deal',
               ))
         ],
       ),
@@ -71,27 +72,40 @@ class _DealPageState extends State<DealPage> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: FittedBox(
-                            child: Image.network(widget.model.thumbnailUrl),
+                            child: Image.network(
+                              widget.model.thumbnailUrl,
+                              semanticLabel: 'Game image',
+                            ),
                             fit: BoxFit.fitWidth),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          PriceTag.red(widget.model.originalPrice),
-                          PriceTag.green(widget.model.price),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: _buildBasicText(widget.model.gameName),
-                      ),
-                      Center(
-                          child: Text(
-                        'is',
-                        style: TextStyle(color: Colors.black38),
-                      )),
-                      _buildBasicText(
-                        '${widget.model.formattedPercentageOff}% off!',
+                      Semantics(
+                        label: _buildDescription(),
+                        child: ExcludeSemantics(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  PriceTag.red(widget.model.originalPrice),
+                                  PriceTag.green(widget.model.price),
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: _buildBasicText(widget.model.gameName),
+                              ),
+                              Center(
+                                  child: Text(
+                                'is',
+                                style: TextStyle(color: Colors.black38),
+                              )),
+                              _buildBasicText(
+                                '${widget.model.formattedPercentageOff}% off!',
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       Center(
                           child: Text(
@@ -122,7 +136,7 @@ class _DealPageState extends State<DealPage> {
           ),
           Container(
             alignment: Alignment.center,
-            child: AdWidget(ad: banner),
+            child: ExcludeSemantics(child: AdWidget(ad: banner)),
             width: banner.size.width.toDouble(),
             height: banner.size.height.toDouble(),
           ),
@@ -151,5 +165,9 @@ class _DealPageState extends State<DealPage> {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Something went wrong opening deal')));
     }
+  }
+
+  String _buildDescription() {
+    return '${widget.model.gameName} is ${widget.model.formattedPercentageOff}% off (from ${widget.model.originalPrice}\$ to ${widget.model.price}\$)';
   }
 }

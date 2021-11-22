@@ -52,8 +52,7 @@ class _HomePageState extends State<HomePage> {
             hasFilter: bloc.selectedServer.hasFilter,
             hasSearch: bloc.selectedServer.hasSearch,
             isSearching: state.isSearching,
-            label:
-                bloc.serverIndex == 0 ? 'Bookmarked deals' : 'Discover deals',
+            label: bloc.serverIndex == 0 ? 'Saved deals' : 'Discover deals',
             onBackPressed: () => bloc.add(SetIsSearching(false)),
             onFilterPressed: () => bloc.add(FilterButtonPressed(context)),
             onSearchPressed: () => bloc.add(state.isSearching
@@ -75,7 +74,7 @@ class _HomePageState extends State<HomePage> {
               BottomNavigationBarItem(
                   icon: Icon(Icons.library_books), label: 'Saved deals'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.explore), label: 'Discover'),
+                  icon: Icon(Icons.explore), label: 'Discover deals'),
             ],
             currentIndex: bloc.serverIndex,
             onTap: (i) => bloc.add(SetBottomNavigation(i)),
