@@ -9,48 +9,37 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
       : super(initialState) {
     server.getAllStores().then((value) {
       add(SetAllStores(value));
+
+      on<SetExpandedPanel>((event, emit) => emit(_onSetExpandedPanel(event)));
+      on<AddStore>((event, emit) => emit(_onAddStore(event)));
+      on<RemoveStore>((event, emit) => emit(_onRemoveStore(event)));
+      on<SetFilterValues>((event, emit) => emit(_onSetFilterValues(event)));
+      on<SetAllStores>((event, emit) => emit(_onSetAllStores(event)));
+      on<UpdateWithModel>((event, emit) => emit(_onUpdateWithModel(event)));
     });
   }
 
-  @override
-  Stream<FilterSheetState> mapEventToState(FilterSheetEvent event) async* {
-    if (event is SetFilterValues)
-      yield* _setFilterValues(event);
-    else if (event is SetExpandedPanel)
-      yield* _setExpandedPanel(event);
-    else if (event is AddStore)
-      yield* _addStore(event);
-    else if (event is SetAllStores)
-      yield* _setAllStores(event);
-    else if (event is RemoveStore)
-      yield* _removeStore(event);
-    else if (event is UpdateWithModel)
-      yield* _updateWithModel(event);
-    else
-      throw UnimplementedError();
-  }
-
-  Stream<FilterSheetState> _setExpandedPanel(SetExpandedPanel event) async* {
+  FilterSheetState _onSetExpandedPanel(SetExpandedPanel event) {
     Map<FilterSheetSections, bool> newMap = Map.of(state.sectionsExpansions);
     newMap[event.value] = event.state;
-    yield state.updateWith(sectionsExpansions: newMap);
+    return state.updateWith(sectionsExpansions: newMap);
   }
 
-  Stream<FilterSheetState> _addStore(AddStore event) async* {
+  FilterSheetState _onAddStore(AddStore event) {
     var newStores = List.of(state.filterModel.stores);
     if (!newStores.contains(event.store)) newStores.add(event.store);
-    yield state.updateWith(
+    return state.updateWith(
         filterModel: state.filterModel.updateWith(stores: newStores));
   }
 
-  Stream<FilterSheetState> _removeStore(RemoveStore event) async* {
+  FilterSheetState _onRemoveStore(RemoveStore event) {
     var newStores = List.of(state.filterModel.stores);
     newStores.remove(event.store);
-    yield state.updateWith(
+    return state.updateWith(
         filterModel: state.filterModel.updateWith(stores: newStores));
   }
 
-  Stream<FilterSheetState> _setFilterValues(SetFilterValues event) async* {
+  FilterSheetState _onSetFilterValues(SetFilterValues event) {
     bool descendingValue = state.filterModel.isDescending;
     if (event.sorting != null) {
       bool? currentDescending = state.isSortDescending(event.sorting!);
@@ -59,7 +48,7 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
       else
         descendingValue = false;
     }
-    yield state.updateWith(
+    return state.updateWith(
       filterModel: state.filterModel.updateWith(
         lowerPrice: event.lowerPrice,
         metacriticScore: event.metacriticScore,
@@ -79,11 +68,11 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
     );
   }
 
-  Stream<FilterSheetState> _setAllStores(SetAllStores event) async* {
-    yield state.updateWith(allStores: event.value);
+  FilterSheetState _onSetAllStores(SetAllStores event) {
+    return state.updateWith(allStores: event.value);
   }
 
-  Stream<FilterSheetState> _updateWithModel(UpdateWithModel event) async* {
-    yield state.updateWith(filterModel: event.model);
+  FilterSheetState _onUpdateWithModel(UpdateWithModel event) {
+    return state.updateWith(filterModel: event.model);
   }
 }

@@ -3,6 +3,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:video_game_wish_list/common/services/preferences_deal_server.dart';
 
+import 'app/home_page/home_page.dart';
 import 'app/home_page/home_page_builder.dart';
 import 'common/services/api_deal_server.dart';
 
@@ -29,7 +30,11 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.orange,
           ),
-          home: HomePageBuilder(),
+          home: Consumer<ApiDealServer>(
+            builder: (context, _, __) => Consumer<PreferencesDealServer>(
+              builder: (context, _, __) => HomePage.create(context),
+            ),
+          ),
         ),
       ),
     );

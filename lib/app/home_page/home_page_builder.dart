@@ -1,3 +1,5 @@
+/*
+
 import 'package:flutter/material.dart';
 import 'package:video_game_wish_list/app/home_page/home_page.dart';
 
@@ -14,3 +16,5 @@ class HomePageBuilder extends StatelessWidget {
     // TODO: Change this into using a Builder
   }
 }
+
+*/

@@ -54,22 +54,21 @@ class _HomePageState extends State<HomePage> {
             isSearching: state.isSearching,
             label:
                 bloc.serverIndex == 0 ? 'Bookmarked deals' : 'Discover deals',
-            onBackPressed: () => bloc.add(SetIsSearchingEvent(false)),
-            onFilterPressed: () => bloc.add(FilterButtonPressedEvent(context)),
+            onBackPressed: () => bloc.add(SetIsSearching(false)),
+            onFilterPressed: () => bloc.add(FilterButtonPressed(context)),
             onSearchPressed: () => bloc.add(state.isSearching
-                ? SetSearchTermEvent(_searchFieldController.text)
-                : SetIsSearchingEvent(true)),
-            onSearchSubmit: (String value) =>
-                bloc.add(SetSearchTermEvent(value)),
+                ? UpdateSearchTerm(_searchFieldController.text)
+                : SetIsSearching(true)),
+            onSearchSubmit: (String value) => bloc.add(UpdateSearchTerm(value)),
             searchFieldController: _searchFieldController,
           ),
           body: HomePageDealListView(
             deals: state.deals,
             isDone: !bloc.hasMorePages,
-            onRenderCell: (int value) => bloc.add(RenderItemEvent(value)),
+            onRenderCell: (int value) => bloc.add(RenderItem(value)),
             hasError: state.hasError,
-            onRetryAppending: () => bloc.add(RetryLoadingButtonEvent()),
-            onRetryLoading: () => bloc.add(GetInitialPageEvent()),
+            onRetryAppending: () => bloc.add(RetryLoadingButton()),
+            onRetryLoading: () => bloc.add(GetInitialPage()),
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: [
@@ -79,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                   icon: Icon(Icons.explore), label: 'Discover'),
             ],
             currentIndex: bloc.serverIndex,
-            onTap: (i) => bloc.add(SetBottomNavigationEvent(i)),
+            onTap: (i) => bloc.add(SetBottomNavigation(i)),
           ),
         );
       },

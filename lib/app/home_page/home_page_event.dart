@@ -6,60 +6,66 @@ class HomePageEvent {
   HomePageEvent();
 }
 
-class AppendDealsEvent extends HomePageEvent {
-  AppendDealsEvent(this.deals) : super();
+class AppendDeals extends HomePageEvent {
+  AppendDeals(this.deals) : super();
 
   final List<DealModel> deals;
 }
 
-class SetDealsEvent extends HomePageEvent {
-  SetDealsEvent(this.deals) : super();
+class SetDeals extends HomePageEvent {
+  SetDeals(this.deals) : super();
 
   final List<DealModel>? deals;
 }
 
-class SetFilterEvent extends HomePageEvent {
-  SetFilterEvent(this.filter);
+class SetFilter extends HomePageEvent {
+  SetFilter(this.filter);
 
   FilterModel filter;
 }
 
-class RenderItemEvent extends HomePageEvent {
-  RenderItemEvent(this.index);
+class RenderItem extends HomePageEvent {
+  RenderItem(this.index);
 
   int index;
 }
 
-class FilterButtonPressedEvent extends HomePageEvent {
-  FilterButtonPressedEvent(this.context);
+class FilterButtonPressed extends HomePageEvent {
+  FilterButtonPressed(this.context);
 
   BuildContext context;
 }
 
-class GetInitialPageEvent extends HomePageEvent {}
+class GetInitialPage extends HomePageEvent {}
 
-class SetHasErrorEvent extends HomePageEvent {
-  SetHasErrorEvent(this.value);
+class SetHasError extends HomePageEvent {
+  SetHasError(this.value);
 
   bool value;
 }
 
-class RetryLoadingButtonEvent extends HomePageEvent {}
+class RetryLoadingButton extends HomePageEvent {}
 
-class SetIsSearchingEvent extends HomePageEvent {
-  SetIsSearchingEvent(this.value);
+class SetIsSearching extends HomePageEvent {
+  SetIsSearching(this.value);
 
   final bool value;
 }
 
-class SetSearchTermEvent extends HomePageEvent {
-  SetSearchTermEvent(this.value);
+class SetSearchTerm extends HomePageEvent {
+  SetSearchTerm(this.value);
 
   final String value;
 }
 
-class SetBottomNavigationEvent extends HomePageEvent {
-  SetBottomNavigationEvent(this.value);
+class UpdateSearchTerm extends HomePageEvent {
+  UpdateSearchTerm(this.value);
+
+  final String value;
+}
+
+class SetBottomNavigation extends HomePageEvent {
+  SetBottomNavigation(this.value);
 
   final int value;
 }

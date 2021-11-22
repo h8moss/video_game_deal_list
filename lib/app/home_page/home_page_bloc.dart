@@ -11,13 +11,27 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     HomePageState initialState, {
     required this.servers,
   }) : super(initialState) {
-    add(GetInitialPageEvent());
+    on<AppendDeals>((event, emit) => emit(_onAppendDeals(event)));
+    on<SetDeals>((event, emit) => emit(_onSetDeals(event)));
+    on<SetFilter>((event, emit) => emit(_onSetFilter(event)));
+    on<GetInitialPage>((event, emit) async => await _onGetInitialPage(event));
+    on<RenderItem>((event, emit) async => await _onRenderItem(event));
+    on<RetryLoadingButton>(
+        (event, emit) async => await _onRetryLoadingButton(event));
+    on<FilterButtonPressed>(
+        (event, emit) async => await _onFilterButtonPressed(event));
+    on<SetHasError>((event, emit) => emit(_onSetHasError(event)));
+    on<SetIsSearching>((event, emit) => emit(_onSetIsSearching(event)));
+    on<UpdateSearchTerm>((event, emit) => _onUpdateSearchTerm(event));
+    on<SetSearchTerm>((event, emit) => emit(_onSetSearchTerm(event)));
+    on<SetBottomNavigation>((event, emit) => _onSetBottomNavigation(event));
+
+    add(GetInitialPage());
   }
 
   final List<DealServer> servers;
 
   int serverIndex = 0;
-
   int _currentPage = 0;
   int _totalPages = 1;
 
@@ -26,122 +40,96 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
   DealServer get selectedServer => servers[serverIndex];
 
   @override
-  Stream<HomePageState> mapEventToState(HomePageEvent event) async* {
-    if (event is AppendDealsEvent)
-      yield* _appendDeals(event);
-    else if (event is SetDealsEvent)
-      yield* _setDeals(event);
-    else if (event is SetFilterEvent)
-      yield* _setFilter(event);
-    else if (event is GetInitialPageEvent)
-      yield* _getInitialPage(event);
-    else if (event is RenderItemEvent)
-      yield* _renderItem(event);
-    else if (event is FilterButtonPressedEvent)
-      yield* _filterButtonPressed(event);
-    else if (event is SetHasErrorEvent)
-      yield* _setHasError(event);
-    else if (event is RetryLoadingButtonEvent)
-      yield* _retryLoadingButton(event);
-    else if (event is SetIsSearchingEvent)
-      yield* _setIsSearching(event);
-    else if (event is SetSearchTermEvent)
-      yield* _setSearchTerm(event);
-    else if (event is SetBottomNavigationEvent)
-      yield* _setBottomNavigation(event);
-    else
-      throw UnimplementedError();
-  }
-
-  @override
   void onError(Object error, StackTrace stackTrace) {
-    add(SetHasErrorEvent(true));
+    add(SetHasError(true));
     super.onError(error, stackTrace);
   }
 
-  Stream<HomePageState> _appendDeals(AppendDealsEvent event) async* {
+  HomePageState _onAppendDeals(AppendDeals event) {
     if (state.deals != null) {
-      yield state.updateWith(deals: [...state.deals!, ...event.deals]);
+      return state.updateWith(deals: [...state.deals!, ...event.deals]);
     } else
-      yield state;
+      return state;
   }
 
-  Stream<HomePageState> _setDeals(SetDealsEvent event) async* {
-    yield state.updateWith(deals: event.deals);
+  HomePageState _onSetDeals(SetDeals event) {
+    return state.updateWith(deals: event.deals);
   }
 
-  Stream<HomePageState> _setFilter(SetFilterEvent event) async* {
-    yield state.updateWith(filter: event.filter);
+  HomePageState _onSetFilter(SetFilter event) {
+    return state.updateWith(filter: event.filter);
   }
 
-  Stream<HomePageState> _getInitialPage(GetInitialPageEvent event) async* {
+  Future<void> _onGetInitialPage(GetInitialPage event) async {
     _currentPage = 0;
     final deals = await _fetchDeals();
     if (deals != null) {
       _totalPages = deals.totalPages;
-      add(SetDealsEvent(deals.results));
+      add(SetDeals(deals.results));
     }
   }
 
-  Stream<HomePageState> _renderItem(RenderItemEvent event) async* {
+  Future<void> _onRenderItem(RenderItem event) async {
     int threshold = (_currentPage + 1) * 60 - 5;
-    print(event.index);
+
     if (event.index > threshold && hasMorePages) {
       _currentPage++;
       final deals = await _fetchDeals();
       if (deals != null) {
         _totalPages = deals.totalPages;
-        add(AppendDealsEvent(deals.results));
+        add(AppendDeals(deals.results));
       }
     }
   }
 
-  Stream<HomePageState> _retryLoadingButton(
-      RetryLoadingButtonEvent event) async* {
+  Future<void> _onRetryLoadingButton(RetryLoadingButton event) async {
     final deals = await _fetchDeals(_currentPage - 1);
     if (deals != null) {
       _totalPages = deals.totalPages;
       _currentPage++;
-      add(AppendDealsEvent(deals.results));
+      add(AppendDeals(deals.results));
     }
   }
 
-  Stream<HomePageState> _filterButtonPressed(
-      FilterButtonPressedEvent event) async* {
+  Future<void> _onFilterButtonPressed(FilterButtonPressed event) async {
     final filter = await FilterBottomSheet.show(event.context, state.filter);
     if (filter != null) {
-      add(SetDealsEvent(null));
-      add(SetFilterEvent(filter));
-      add(GetInitialPageEvent());
+      add(SetDeals(null));
+      add(SetFilter(filter));
+      add(GetInitialPage());
     }
   }
 
-  Stream<HomePageState> _setHasError(SetHasErrorEvent event) async* {
-    yield state.updateWith(hasError: event.value);
+  HomePageState _onSetHasError(SetHasError event) {
+    return state.updateWith(hasError: event.value);
   }
 
-  Stream<HomePageState> _setIsSearching(SetIsSearchingEvent event) async* {
-    yield state.updateWith(isSearching: event.value);
-    if (!event.value) add(SetSearchTermEvent(''));
+  HomePageState _onSetIsSearching(SetIsSearching event) {
+    if (!event.value) add(SetSearchTerm(''));
+    return state.updateWith(isSearching: event.value);
   }
 
-  Stream<HomePageState> _setSearchTerm(SetSearchTermEvent event) async* {
-    yield state.updateWith(searchTerm: event.value);
-    add(GetInitialPageEvent());
+  void _onUpdateSearchTerm(UpdateSearchTerm event) {
+    add(SetDeals(null));
+    add(SetSearchTerm(event.value));
+    add(GetInitialPage());
   }
 
-  Stream<HomePageState> _setBottomNavigation(
-      SetBottomNavigationEvent event) async* {
+  HomePageState _onSetSearchTerm(SetSearchTerm event) {
+    return state.updateWith(searchTerm: event.value);
+  }
+
+  void _onSetBottomNavigation(SetBottomNavigation event) {
     if (event.value < servers.length) {
       serverIndex = event.value;
-      add(SetDealsEvent(null));
-      add(GetInitialPageEvent());
+      add(SetDeals(null));
+      add(GetInitialPage());
     }
   }
 
   Future<DealResults?> _fetchDeals([int? page]) async {
     if (page == null) page = _currentPage;
-    add(SetHasErrorEvent(false));
+    add(SetHasError(false));
     DealResults? games;
     await selectedServer.initialize();
     try {
@@ -159,7 +147,6 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> {
     for (var server in servers) {
       server.dispose();
     }
-
     super.close();
   }
 }
