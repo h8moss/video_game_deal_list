@@ -37,8 +37,6 @@ class FilterBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: add semantics
-
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
     return BlocBuilder<FilterSheetBloc, FilterSheetState>(
       builder: (context, state) => Column(
@@ -65,29 +63,35 @@ class FilterBottomSheet extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView(
-              children: [
-                ExpansionPanelList(
-                  animationDuration: Duration(seconds: 1),
-                  expansionCallback: (index, isExpanded) => bloc.add(
-                      SetExpandedPanel(
-                          FilterSheetSections.values[index], !isExpanded)),
-                  children: [
-                    for (var item in FilterSheetSections.values)
-                      ExpansionPanel(
-                        headerBuilder: (_, b) => Text(
-                            EnumToString.enumToCamelCaseString(item.toString()),
-                            style: TextStyle(fontSize: 19)),
-                        body: _getSectionBuilder(item)(context, state),
-                        isExpanded: state.getSectionExpansion(item),
-                      ),
-                  ],
-                )
-              ],
+            child: SingleChildScrollView(
+              child: ExpansionPanelList(
+                animationDuration: Duration(milliseconds: 500),
+                expansionCallback: (index, isExpanded) => bloc.add(
+                    SetExpandedPanel(
+                        FilterSheetSections.values[index], !isExpanded)),
+                children: [
+                  for (int i = 0; i < FilterSheetSections.values.length; i++)
+                    _buildSectionExpansion(context, state, i),
+                ],
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  ExpansionPanel _buildSectionExpansion(
+      BuildContext context, FilterSheetState state, int index) {
+    var item = FilterSheetSections.values[index];
+    return ExpansionPanel(
+      headerBuilder: (_, b) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(EnumToString.enumToCamelCaseString(item.toString()),
+            style: TextStyle(fontSize: 19)),
+      ),
+      body: _getSectionBuilder(item)(context, state),
+      isExpanded: state.getSectionExpansion(item),
     );
   }
 
@@ -176,7 +180,10 @@ class FilterBottomSheet extends StatelessWidget {
               .map((v) => _buildStoreCheckbox(context, v, state))
               .toList()
         else
-          CircularProgressIndicator(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircularProgressIndicator(),
+          ),
       ],
     );
   }
@@ -315,22 +322,16 @@ class FilterBottomSheet extends StatelessWidget {
   Widget _buildStoreCheckbox(
       BuildContext context, StoreModel storeModel, FilterSheetState state) {
     final bloc = BlocProvider.of<FilterSheetBloc>(context);
-    return Row(
-      children: [
-        Checkbox(
-          value: state.isStoreSelected(storeModel),
-          onChanged: (value) {
-            if (value == true)
-              bloc.add(AddStore(storeModel));
-            else
-              bloc.add(RemoveStore(storeModel));
-          },
-        ),
-        StoreDisplay(
-          model: storeModel,
-          width: 20,
-        ),
-      ],
+    return CheckboxListTile(
+      value: state.isStoreSelected(storeModel),
+      onChanged: (value) {
+        if (value == true)
+          bloc.add(AddStore(storeModel));
+        else
+          bloc.add(RemoveStore(storeModel));
+      },
+      title: StoreDisplay(model: storeModel, width: 20),
+      controlAffinity: ListTileControlAffinity.leading,
     );
   }
 }

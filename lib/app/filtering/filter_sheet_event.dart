@@ -66,3 +66,5 @@ class SetAllStores extends FilterSheetEvent {
 
   List<StoreModel>? value;
 }
+
+class FetchAllStores extends FilterSheetEvent {}

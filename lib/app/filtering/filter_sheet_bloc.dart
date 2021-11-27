@@ -5,19 +5,20 @@ import 'filter_sheet_event.dart';
 import 'models/filter_sheet_state.dart';
 
 class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
-  FilterSheetBloc(FilterSheetState initialState, ApiDealServer server)
+  FilterSheetBloc(FilterSheetState initialState, this.server)
       : super(initialState) {
-    server.getAllStores().then((value) {
-      add(SetAllStores(value));
+    on<SetExpandedPanel>((event, emit) => emit(_onSetExpandedPanel(event)));
+    on<AddStore>((event, emit) => emit(_onAddStore(event)));
+    on<RemoveStore>((event, emit) => emit(_onRemoveStore(event)));
+    on<SetFilterValues>((event, emit) => emit(_onSetFilterValues(event)));
+    on<SetAllStores>((event, emit) => emit(_onSetAllStores(event)));
+    on<UpdateWithModel>((event, emit) => emit(_onUpdateWithModel(event)));
+    on<FetchAllStores>((event, emit) async => await _fetchAllStores(event));
 
-      on<SetExpandedPanel>((event, emit) => emit(_onSetExpandedPanel(event)));
-      on<AddStore>((event, emit) => emit(_onAddStore(event)));
-      on<RemoveStore>((event, emit) => emit(_onRemoveStore(event)));
-      on<SetFilterValues>((event, emit) => emit(_onSetFilterValues(event)));
-      on<SetAllStores>((event, emit) => emit(_onSetAllStores(event)));
-      on<UpdateWithModel>((event, emit) => emit(_onUpdateWithModel(event)));
-    });
+    add(FetchAllStores());
   }
+
+  final ApiDealServer server;
 
   FilterSheetState _onSetExpandedPanel(SetExpandedPanel event) {
     Map<FilterSheetSections, bool> newMap = Map.of(state.sectionsExpansions);
@@ -74,5 +75,11 @@ class FilterSheetBloc extends Bloc<FilterSheetEvent, FilterSheetState> {
 
   FilterSheetState _onUpdateWithModel(UpdateWithModel event) {
     return state.updateWith(filterModel: event.model);
+  }
+
+  Future<void> _fetchAllStores(FetchAllStores event) async {
+    final allStores = await server.getAllStores();
+
+    add(SetAllStores(allStores));
   }
 }

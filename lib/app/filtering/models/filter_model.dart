@@ -21,6 +21,23 @@ class FilterModel extends Equatable {
     this.steamWorks: false,
   });
 
+  const FilterModel._required({
+    required this.upperPrice,
+    required this.lowerPrice,
+    required this.stores,
+    required this.sorting,
+    required this.isDescending,
+    required this.metacriticScore,
+    required this.steamScore,
+    required this.useLowerPrice,
+    required this.useMetacriticScore,
+    required this.useSteamScore,
+    required this.useUpperPrice,
+    required this.isAAA,
+    required this.isActive,
+    required this.steamWorks,
+  });
+
   FilterModel updateWith({
     int? upperPrice,
     int? lowerPrice,
@@ -37,7 +54,7 @@ class FilterModel extends Equatable {
     bool? isActive,
     bool? steamWorks,
   }) {
-    return FilterModel(
+    return FilterModel._required(
       isDescending: isDescending ?? this.isDescending,
       lowerPrice: lowerPrice ?? this.lowerPrice,
       metacriticScore: metacriticScore ?? this.metacriticScore,
