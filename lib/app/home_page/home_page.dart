@@ -48,19 +48,7 @@ class _HomePageState extends State<HomePage> {
     return BlocBuilder<HomePageBloc, HomePageState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: HomePageAppBar(
-            hasFilter: bloc.selectedServer.hasFilter,
-            hasSearch: bloc.selectedServer.hasSearch,
-            isSearching: state.isSearching,
-            label: bloc.serverIndex == 0 ? 'Saved deals' : 'Discover deals',
-            onBackPressed: () => bloc.add(SetIsSearching(false)),
-            onFilterPressed: () => bloc.add(FilterButtonPressed(context)),
-            onSearchPressed: () => bloc.add(state.isSearching
-                ? UpdateSearchTerm(_searchFieldController.text)
-                : SetIsSearching(true)),
-            onSearchSubmit: (String value) => bloc.add(UpdateSearchTerm(value)),
-            searchFieldController: _searchFieldController,
-          ),
+          appBar: _buildAppBar(state),
           body: HomePageDealListView(
             deals: state.deals,
             isDone: !bloc.hasMorePages,
@@ -68,6 +56,8 @@ class _HomePageState extends State<HomePage> {
             hasError: state.hasError,
             onRetryAppending: () => bloc.add(RetryLoadingButton()),
             onRetryLoading: () => bloc.add(GetInitialPage()),
+            kAdCount: bloc.serverIndex *
+                7, // ! if I add more servers this bit of code is insane
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: [
@@ -81,6 +71,22 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       },
+    );
+  }
+
+  HomePageAppBar _buildAppBar(HomePageState state) {
+    return HomePageAppBar(
+      hasFilter: bloc.selectedServer.hasFilter,
+      hasSearch: bloc.selectedServer.hasSearch,
+      isSearching: state.isSearching,
+      label: bloc.serverIndex == 0 ? 'Saved deals' : 'Discover deals',
+      onBackPressed: () => bloc.add(SetIsSearching(false)),
+      onFilterPressed: () => bloc.add(FilterButtonPressed(context)),
+      onSearchPressed: () => bloc.add(state.isSearching
+          ? UpdateSearchTerm(_searchFieldController.text)
+          : SetIsSearching(true)),
+      onSearchSubmit: (String value) => bloc.add(UpdateSearchTerm(value)),
+      searchFieldController: _searchFieldController,
     );
   }
 }
