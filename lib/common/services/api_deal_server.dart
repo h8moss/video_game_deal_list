@@ -19,6 +19,7 @@ class ApiDealServer extends DealServer {
 
   static String get dealsUrl => '$_domain/deals';
   static String get storesUrl => '$_domain/stores';
+  static String get gamesUrl => '$_domain/games';
 
   @override
   Future<DealResults> fetchDeals(
@@ -76,12 +77,31 @@ class ApiDealServer extends DealServer {
     if (response.statusCode == 200) {
       try {
         var obj = response.data as Map<String, dynamic>;
-        yield DealModel.fromGameInfoJson(obj, dealID);
+        final cheapest = await _getCheapestDeal(obj['gameInfo']['gameID']);
+        yield DealModel.fromGameInfoJson(
+            obj, dealID, cheapest['id'], cheapest['price']);
       } on TypeError catch (_) {
         throw ArgumentError.value(dealID, 'dealID');
       }
     } else
       throw HttpException('Could not reach deals API ${response.statusCode}');
+  }
+
+  Future<Map<String, dynamic>> _getCheapestDeal(String gameID) async {
+    final Map<String, dynamic> result = {};
+    final response = await _dio.get('$gamesUrl?id=$gameID');
+    if (response.statusCode == 200) {
+      try {
+        List<dynamic> deals = (response.data?['deals']) ?? [];
+        if (deals.isNotEmpty) {
+          result['id'] = deals.first['dealID'];
+          result['price'] = double.parse(deals.first['price']);
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+    return result;
   }
 
   String _getQuery(int page, FilterModel filter, String search) {

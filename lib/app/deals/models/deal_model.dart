@@ -10,19 +10,25 @@ class DealModel {
     required this.storeId,
     required this.percentageOff,
     required this.id,
+    required this.cheapestDeal,
+    required this.cheapestPrice,
   });
   factory DealModel.fromJson(dynamic json) {
     return DealModel(
-        gameName: json['title']!,
-        originalPrice: double.parse(json['normalPrice']!),
-        price: double.parse(json['salePrice']!),
-        thumbnailUrl: json['thumb']!,
-        storeId: int.parse(json['storeID']!),
-        percentageOff: double.parse(json['savings']!),
-        id: json['dealID']);
+      gameName: json['title']!,
+      originalPrice: double.parse(json['normalPrice']!),
+      price: double.parse(json['salePrice']!),
+      thumbnailUrl: json['thumb']!,
+      storeId: int.parse(json['storeID']!),
+      percentageOff: double.parse(json['savings']!),
+      id: json['dealID'],
+      cheapestDeal: null,
+      cheapestPrice: -1,
+    );
   }
 
-  factory DealModel.fromGameInfoJson(dynamic json, String dealId) {
+  factory DealModel.fromGameInfoJson(dynamic json, String dealId,
+      [String? cheapestDeal, double cheapestPrice = -1]) {
     double retail = double.parse(json['gameInfo']['retailPrice']);
     double sale = double.parse(json['gameInfo']['salePrice']);
     return DealModel(
@@ -33,6 +39,8 @@ class DealModel {
       price: sale,
       storeId: int.parse(json['gameInfo']['storeID']),
       thumbnailUrl: json['gameInfo']['thumb'],
+      cheapestDeal: cheapestDeal,
+      cheapestPrice: cheapestDeal != null ? cheapestPrice : -1,
     );
   }
 
@@ -63,8 +71,18 @@ class DealModel {
   /// sale represented as a number from 0 to 100
   final double percentageOff;
 
+  /// cheapest deal ID if any
+  final String? cheapestDeal;
+
+  /// cheapest available price
+  final double cheapestPrice;
+
   /// true only if price is 0
   bool get isFree => price == 0;
+
+  /// true if there is a cheaper deal for the game
+  bool get hasBetterDeal =>
+      cheapestDeal != null && cheapestDeal != id && cheapestPrice < price;
 
   /// rounded and formatted percentage value
   ///

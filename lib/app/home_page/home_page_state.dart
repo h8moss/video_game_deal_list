@@ -50,5 +50,7 @@ class _MarkedDealModel extends DealModel {
           price: 0,
           storeId: 0,
           thumbnailUrl: '',
+          cheapestDeal: null,
+          cheapestPrice: -1,
         );
 }

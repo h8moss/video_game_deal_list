@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_game_wish_list/app/deals/deal_page_builder.dart';
 import 'package:video_game_wish_list/common/services/ad_id_provider.dart';
 import 'package:video_game_wish_list/common/widgets/price_tag.dart';
 import 'package:video_game_wish_list/common/widgets/store_display_builder.dart';
@@ -25,7 +26,7 @@ class DealPage extends StatefulWidget {
 
 class _DealPageState extends State<DealPage> {
   final BannerAd banner = BannerAd(
-    adUnitId: AdIDProvider.bannerID,
+    adUnitId: AdIDProvider.dealPageBannerID,
     size: AdSize.banner,
     request: AdRequest(),
     listener: BannerAdListener(),
@@ -117,6 +118,14 @@ class _DealPageState extends State<DealPage> {
                         storeID: widget.model.storeId,
                         width: 50,
                       )),
+                      if (widget.model.hasBetterDeal)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            onPressed: () => _launchBetterDeal(context),
+                            child: Text('We might have found a better deal!'),
+                          ),
+                        ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextButton(
@@ -165,6 +174,10 @@ class _DealPageState extends State<DealPage> {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Something went wrong opening deal')));
     }
+  }
+
+  void _launchBetterDeal(BuildContext context) {
+    DealPageBuilder.show(context, widget.model.cheapestDeal!);
   }
 
   String _buildDescription() {
